@@ -1,0 +1,1 @@
+type JSONPrimitive = import("std-node").JSONPrimitive;

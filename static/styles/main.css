@@ -1,0 +1,19 @@
+@import url("navigation.css");
+
+:root {
+    --text: #2E3338;
+    --background: white;
+    --accent: #747F8D;
+}
+
+*, *::before, *::after {
+    margin: 0;
+    color: var(--text);
+    box-sizing: border-box;
+    font-family: "Roboto", sans-serif;
+}
+
+body {
+    background-color: var(--background);
+    font-size: 16px;
+}

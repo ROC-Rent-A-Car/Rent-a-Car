@@ -1,0 +1,17 @@
+{
+  "web": {
+    "host": "localhost",
+    "port": 8081,
+    "max_packet_size": 30
+  },
+  "database": {
+    "host": "localhost",
+    "database": "RentACar",
+    "port": 5432
+  },
+  "api": {
+    "version": 1,
+    "token_days_valid": 7,
+    "token_refresh_margin": 2
+  }
+}

@@ -1,0 +1,22 @@
+.navigation {
+    display: flex;
+    justify-content: center;
+    width: 100vw;
+    height: 50px;
+    border-bottom: 1px solid var(--accent);
+    line-height: 50px;
+    font-size: 21px;
+}
+
+.navigation a {
+    display: inline-block;
+    margin: 0 10px;
+    cursor: pointer;
+    user-select: none;
+    text-decoration: none;
+}
+
+.navigation #account {
+    position: absolute;
+    right: 10px;
+}
