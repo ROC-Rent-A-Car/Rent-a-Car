@@ -1,6 +1,5 @@
 import { Status, Token } from "std-node";
 import { DB, SETTINGS } from "..";
-import { Extension } from "../decorators/Extension";
 import { Conflict } from "../enums/Conflict";
 import { RequestMethod } from "../enums/RequestMethod";
 import { User } from "../interfaces/tables/User";
@@ -19,16 +18,17 @@ import { Username } from "../utils/Username";
  * **URL:** `api/v{version}/register`  
  * **Request method:** `PUT`  
  * **Returns:** `User`  
+ * **Authorized:** `false`  
  * 
- * **Post fields:**
+ * **Form body:**
  * 
- * - `username`: The user username
- * - `password`: The user plain password
- * - `email`: The user email
- * - `number`: The user phone number
- * - `postal`: The user postal code
+ * - `username`: The username string
+ * - `password`: The plain password string
+ * - `email`: The email string
+ * - `phone`: The phone number string
+ * - `postal`: The postal code string
+ * - `permLevel` The permission level number 
  */
-@Extension
 export class PutRegister extends Controller {
 
     constructor() {
@@ -41,7 +41,7 @@ export class PutRegister extends Controller {
             username: new Username(request.body.username),
             password: new Password(request.body.password),
             email: new Email(request.body.email),
-            phoneNumber: new PhoneNumber(request.body.number),
+            phoneNumber: new PhoneNumber(request.body.phone),
             postalCode: new PostalCode(request.body.postal)
         };
 
@@ -76,13 +76,14 @@ export class PutRegister extends Controller {
                             processed.phoneNumber,
                             processed.postalCode,
                             new Token(4).toString(),
-                            date.setDate(date.getDate() + SETTINGS.get("api").token_days_valid)
+                            new Date(date.setDate(date.getDate() + SETTINGS.get("api").token_days_valid))
                         ])).rows[0];
 
                         this.respond(response, Status.OK, {
+                            uuid: user.uuid,
                             username: user.username,
                             email: user.email,
-                            phone: user.email,
+                            phone: user.phone,
                             postalCode: user.postal_code,
                             permLevel: user.perm_level,
                             renting: user.renting,

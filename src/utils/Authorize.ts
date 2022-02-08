@@ -23,24 +23,23 @@ export class Authorize {
             } else {
                 const tokenInfo = (await client.query<TokenInfo>(`
                     SELECT 
-                        token_expiration as tokenExpiration,
+                        token_expiration as "tokenExpiration",
                         token
                     FROM users 
                     WHERE 
                         token = $1 AND 
-                        uuid = $2 AND 
+                        uuid::text = $2 AND 
                         token_expiration > now()
                 `, [
-                    uuid,
-                    token
+                    token,
+                    uuid
                 ])).rows[0] ?? null;
+                const date = new Date();
                 
                 // If the token was valid, check if it should be refreshed according to the API settings
                 if (tokenInfo && new Date(tokenInfo.tokenExpiration).setDate(
                     tokenInfo.tokenExpiration.getDate() - SETTINGS.get("api").token_refresh_margin
-                ) <= tokenInfo.tokenExpiration.getTime()) {
-                    const date = new Date();
-
+                ) <= date.getTime()) {
                     date.setDate(date.getDate() + SETTINGS.get("api").token_days_valid);
 
                     tokenInfo.tokenExpiration = date;

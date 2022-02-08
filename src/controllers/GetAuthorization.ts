@@ -1,5 +1,4 @@
 import { Status } from "std-node";
-import { Extension } from "../decorators/Extension";
 import { Conflict } from "../enums/Conflict";
 import { RequestMethod } from "../enums/RequestMethod";
 import { Controller } from "../templates/Controller";
@@ -11,28 +10,28 @@ import { Authorize } from "../utils/Authorize";
  * An authorization API controller to verify the provided token
  * 
  * **URL:** `api/v{version}/authorize/:userId`  
- * **Request method:** `POST`  
- * **Returns:** `PermLevel`  
+ * **Request method:** `GET`  
+ * **Returns:** `TokenInfo`  
+ * **Authorized:** `true`  
  * 
  * **URL fields:**
  * 
  * - `userId`: The user ID
  * 
- * **Post fields:**
+ * **Header fields:**
  * 
- * - `token`: The authorization token
+ * - `authorization`: The authorization token
  */
-@Extension
-export class PostAuthorization extends Controller {
+export class GetAuthorization extends Controller {
 
     constructor() {
-        super("/authorize/:userId", RequestMethod.POST);
+        super("/authorize/:userId", RequestMethod.GET);
     }
 
     protected async request(request: request, response: response): Promise<void> {
-        if (request.body.token && /\d+/.test(request.params.userId)) {
+        if (request.headers.authorization && /\d+/.test(request.params.userId)) {
             // Find a user which has the provided credentials
-            const result = await new Authorize(request.params.userId, request.body.token).authorized;
+            const result = await new Authorize(request.params.userId, request.headers.authorization).authorized;
 
             if (result) {
                 this.respond(response, Status.OK, {

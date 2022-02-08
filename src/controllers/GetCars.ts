@@ -1,13 +1,34 @@
-import { JSONObject, Status } from "std-node";
+import { Status } from "std-node";
 import { DB } from "..";
-import { Extension } from "../decorators/Extension";
 import { Conflict } from "../enums/Conflict";
 import { RequestMethod } from "../enums/RequestMethod";
 import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
 import { response } from "../types/response";
 
-@Extension
+/**
+ * A car getter API controller which fetches all the cars which apply to a specified filter
+ * 
+ * **URL:** `api/v{version}/cars/:infoType`  
+ * **Request method:** `GET`  
+ * **Returns:** `Car[]`  
+ * **Authorized:** partially `true`  
+ * 
+ * **URL fields:**
+ * 
+ * - `infoType`: The type of info which should be returned, this can be:
+ *   - `top`: All the cars ordered by most rented
+ *   - `available`: The currently available cars
+ *   - `all`: All the cars without order
+ *   - `cheapest`: All the cars ordered by cheapest price
+ *   - `expensive`: All the cars ordered by the most expensive price
+ *   - `setup` (authorized): All cars which should be setup that day
+ *   - `recent` (authorized): All the recent rents from the user
+ * 
+ * **Header fields:**
+ * 
+ * - `authorization`: The authorization token, not required on unauthorized info types
+ */
 export class GetCars extends Controller {
 
     constructor() {
@@ -35,7 +56,6 @@ export class GetCars extends Controller {
                 return this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
         }
 
-
         DB.connect(async (error, client, release) => {
             if (error) {
                 this.respond(response, Status.INTERNAL_SERVER_ERROR);
@@ -43,7 +63,7 @@ export class GetCars extends Controller {
                 throw error;
             } else {
                 // Adding queryLogic behind it since it's not a user input and contains executable SQL
-                this.respond(response, Status.OK, (await client.query<JSONObject>("SELECT cars.* FROM cars" + queryLogic)).rows);
+                this.respond(response, Status.OK, (await client.query("SELECT cars.* FROM cars " + (queryLogic || ""))).rows);
             }
 
             release();

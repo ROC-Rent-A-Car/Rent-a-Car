@@ -1,12 +1,11 @@
 import { join } from "path";
 import { Pool } from "pg";
 import express from "express";
-import { readFileSync } from "fs";
-import { DevConsole } from "std-node";
+import { readdirSync, readFileSync } from "fs";
+import { BetterArray, DevConsole } from "std-node";
 import { json, urlencoded } from "body-parser";
 import { Settings } from "./utils/Settings";
 import { config } from "dotenv";
-import { extensions } from "./constants/extensions";
 
 // Configuring the .env variables which serve as the private settings, these won't be committed to GitHub
 config();
@@ -24,12 +23,10 @@ export const DB = new Pool({
 
 // Storing the web settings in a variable to avoid repeated function calls
 const web = SETTINGS.get("web");
+const controllers = join(__dirname, "controllers/");
 
 // Listening and logging database errors
 DB.on("error", DevConsole.error);
-
-// Starting the web app listening
-APP.listen(web.port, web.host, () => DevConsole.info("Listening to \x1b[34m%s:%s\x1b[0m", web.host, web.port.toString()));
 
 // Setting POST field settings
 APP.use(urlencoded({ 
@@ -44,7 +41,8 @@ APP.use(json({
 APP.use(express.static(join(__dirname, "../static")));
 
 // Iterating over all the controllers to establish them as API endpoints
-extensions.get("Controller")?.forEach((child) => new child());
-
-// BetterArray.from(readdirSync(controllers))
-//     .asyncMap(async (endpoint) => new (await import(join(controllers, endpoint)))[endpoint.split(".")[0]]());
+BetterArray.from(readdirSync(controllers))
+    .asyncMap(async (endpoint) => new (await import(join(controllers, endpoint)))[endpoint.split(".")[0]]())
+    .then(() => 
+        // Starting the web app
+        APP.listen(web.port, web.host, () => DevConsole.info("Listening to \x1b[34m%s:%s\x1b[0m", web.host, web.port.toString())));

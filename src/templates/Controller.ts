@@ -15,30 +15,31 @@ export abstract class Controller {
         path = `/api/v${versionOverride || SETTINGS.get("api").version}/${path.startsWith("/") ? path.slice(1) : path}`;
 
         // Switches between the request methods to properly register an endpoint
+        // I wish I could just do all of these inline but references and all that stuff limits me
         switch (method) {
             case RequestMethod.GET:
-                APP.get(path, this.request);
+                APP.get(path, (request, response, next) => this.request(request, response, next));
                 break;
             case RequestMethod.POST:
-                APP.post(path, this.request);
+                APP.post(path, (request, response, next) => this.request(request, response, next));
                 break;
             case RequestMethod.PUT:
-                APP.put(path, this.request);
+                APP.put(path, (request, response, next) => this.request(request, response, next));
                 break;
             case RequestMethod.DELETE:
-                APP.delete(path, this.request);
+                APP.delete(path, (request, response, next) => this.request(request, response, next));
                 break;
             case RequestMethod.PATCH:
-                APP.patch(path, this.request);
+                APP.patch(path, (request, response, next) => this.request(request, response, next));
                 break;
             case RequestMethod.OPTIONS:
-                APP.options(path, this.request);
+                APP.options(path, (request, response, next) => this.request(request, response, next));
                 break;
             case RequestMethod.HEAD:
-                APP.head(path, this.request);
+                APP.head(path, (request, response, next) => this.request(request, response, next));
                 break;
             default:
-                APP.all(path, this.request);
+                APP.all(path, (request, response, next) => this.request(request, response, next));
         }
 
         DevConsole.info("Registered \x1b[34m%s\x1b[0m as \x1b[34m%s\x1b[0m", path, RequestMethod[method]);

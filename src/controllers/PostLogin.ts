@@ -1,6 +1,5 @@
 import { Status } from "std-node";
 import { DB } from "..";
-import { Extension } from "../decorators/Extension";
 import { Conflict } from "../enums/Conflict";
 import { RequestMethod } from "../enums/RequestMethod";
 import { User } from "../interfaces/tables/User";
@@ -16,17 +15,17 @@ import { Username } from "../utils/Username";
  * **URL:** `api/v{version}/login/:userId`  
  * **Request method:** `POST`  
  * **Returns:** `User`  
+ * **Authorized:** `false`  
  * 
  * **URL fields:**
  * 
  * - `userId`: The user ID
  * 
- * **Post fields:**
+ * **Form body:**
  * 
  * - `username`: The user username
  * - `password`: The user plain password
  */
-@Extension
 export class PostLogin extends Controller {
 
     constructor() {
@@ -51,16 +50,20 @@ export class PostLogin extends Controller {
                         password.transform()
                     ])).rows[0];
 
-                    this.respond(response, Status.OK, {
-                        username: user.username,
-                        email: user.email,
-                        phone: user.email,
-                        postalCode: user.postal_code,
-                        permLevel: user.perm_level,
-                        renting: user.renting,
-                        token: user.token,
-                        tokenExpiration: user.token_expiration.getTime()
-                    });
+                    if (user) {
+                        this.respond(response, Status.OK, {
+                            username: user.username,
+                            email: user.email,
+                            phone: user.phone,
+                            postalCode: user.postal_code,
+                            permLevel: user.perm_level,
+                            renting: user.renting,
+                            token: user.token,
+                            tokenExpiration: user.token_expiration.getTime()
+                        });
+                    } else {
+                        this.respond(response, Status.UNAUTHORIZED, Conflict.INVALID_LOGIN);
+                    }
                 }
 
                 release();
