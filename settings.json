@@ -4,10 +4,10 @@
     "port": 8081,
     "max_packet_size": 30
   },
-  "database": {
+  "data": {
     "host": "localhost",
-    "database": "RentACar",
-    "port": 5432
+    "port": 5432,
+    "database": "RentACar"
   },
   "api": {
     "version": 1,
