@@ -5,41 +5,41 @@ import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
 import { response } from "../types/response";
 import { Authorize } from "../utils/Authorize";
+import { QueryParser } from "../utils/QueryParser";
 
 /**
  * An authorization API controller to verify the provided token
  * 
- * **URL:** `api/v{version}/authorize/:userId`  
+ * **URL:** `api/v{version}/authorize`  
  * **Request method:** `GET`  
  * **Returns:** `TokenInfo`  
  * **Authorized:** `true`  
  * 
- * **URL fields:**
- * 
- * - `userId`: The user ID
- * 
  * **Header fields:**
  * 
- * - `authorization`: The authorization token
+ * - `authorization`: The authorization query
  */
 export class GetAuthorization extends Controller {
 
     constructor() {
-        super("/authorize/:userId", RequestMethod.GET);
+        super("/authorize", RequestMethod.GET);
     }
 
     protected async request(request: request, response: response): Promise<void> {
-        if (request.headers.authorization && /\d+/.test(request.params.userId)) {
+        const { userId, token } = new QueryParser(request.headers.authorization || "");
+
+        if (userId && token) {
             // Find a user which has the provided credentials
-            const result = await new Authorize(request.params.userId, request.headers.authorization).authorized;
+            const result = await Authorize.getTokenInfo(userId, token);
 
             if (result) {
                 this.respond(response, Status.OK, {
                     tokenExpiration: result.tokenExpiration.getTime(),
-                    token: result.token
+                    token: result.token,
+                    permLevel: result.permLevel
                 });
             } else {
-                this.respond(response, Status.UNAUTHORIZED, Conflict.INVALID_TOKEN);
+                this.respond(response, Status.UNAUTHORIZED, Conflict.INVALID_AUTHORIZATION);
             }
         } else {
             this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
