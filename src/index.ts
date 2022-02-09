@@ -16,7 +16,7 @@ export const SETTINGS = new Settings(JSON.parse(readFileSync(join(__dirname, "..
 export const APP = express();
 // Making a pool connection
 export const DB = new Pool({
-    ...SETTINGS.get("database"),
+    ...SETTINGS.get("data"),
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD
 });

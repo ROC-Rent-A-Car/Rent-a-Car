@@ -4,6 +4,6 @@ import { WebObject } from "./WebObject"
 
 export interface SettingsObject {
     web: WebObject,
-    database: DatabaseObject,
+    data: DatabaseObject,
     api: APIObject
 }
