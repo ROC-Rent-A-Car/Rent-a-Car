@@ -15,7 +15,7 @@ import { Username } from "../utils/Username";
 /**
  * A register API controller which puts an user entry and returns the new user entry
  * 
- * **URL:** `api/v{version}/register`  
+ * **URL:** `api/v{version}/user`  
  * **Request method:** `PUT`  
  * **Returns:** `User`  
  * **Authorized:** `false`  
@@ -29,10 +29,10 @@ import { Username } from "../utils/Username";
  * - `postal`: The postal code string
  * - `permLevel` The permission level number 
  */
-export class PutRegister extends Controller {
+export class PutUser extends Controller {
 
     constructor() {
-        super("/register", RequestMethod.PUT);
+        super("/user", RequestMethod.PUT);
     }
 
     protected request(request: request, response: response): void {
