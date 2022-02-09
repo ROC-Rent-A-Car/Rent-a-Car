@@ -1,21 +1,18 @@
 import { Token } from "std-node";
 import { DB, SETTINGS } from "..";
+import { PermLevel } from "../enums/PermLevel";
 import { TokenInfo } from "../interfaces/tables/TokenInfo";
 
 export class Authorize {
-
-    /**
-     * The authorization promise which will be null if it's invalid/there was an error or have the token info
-     */
-    public readonly authorized: Promise<TokenInfo | null>;
     
     /**
      * Tries to select the token info of the provided user, this will return null if the provided info isn't valid
      * @param uuid The user UUID
      * @param token The user authorization token
+     * @returns The authorization promise which will be null if it's invalid/there was an error or have the token info
      */
-    constructor(uuid: string, token: string) {
-        this.authorized = new Promise((resolve) => DB.connect(async (error, client, release) => {
+    public static getTokenInfo(uuid: string, token: string): Promise<TokenInfo | null> {
+        return new Promise((resolve) => DB.connect(async (error, client, release) => {
             if (error) {
                 resolve(null);
 
@@ -24,7 +21,8 @@ export class Authorize {
                 const tokenInfo = (await client.query<TokenInfo>(`
                     SELECT 
                         token_expiration as "tokenExpiration",
-                        token
+                        token,
+                        perm_level as "permLevel"
                     FROM users 
                     WHERE 
                         token = $1 AND 
@@ -57,5 +55,9 @@ export class Authorize {
 
             release();
         }));
+    }
+
+    public static async isAuthorized(uuid: string, token: string, level: PermLevel): Promise<boolean> {
+        return ((await this.getTokenInfo(uuid, token))?.permLevel || -1) >= level;
     }
 }
