@@ -7,14 +7,14 @@ import { response } from "../types/response";
 /**
  * A car update API controller which updates the specified fields in the car entry
  * 
- * **URL:** `api/v{version}/user/:userId`  
+ * **URL:** `api/v{version}/user/:overwriteId?`  
  * **Request method:** `Patch`  
  * **Returns:** `User`  
  * **Authorized:** `true`  
  * 
  * **URL fields:**
  * 
- * - `userId`: The ID of the user entry which should be updated
+ * - `overwriteId`: The ID of the user entry which should be updated
  * 
  *  **Form body:**
  * 
@@ -29,12 +29,12 @@ import { response } from "../types/response";
  * 
  * **Header fields:**
  * 
- * - `authorization`: The authorization token
+ * - `authorization`: The authorization query
  */
 export class PatchUser extends Controller {
 
     constructor() {
-        super("/user/:userId", RequestMethod.PATCH);
+        super("/user/:overwriteId?", RequestMethod.PATCH);
     }
 
     protected request(_: request, response: response): void {

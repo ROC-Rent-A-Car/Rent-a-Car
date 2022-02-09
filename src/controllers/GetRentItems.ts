@@ -10,7 +10,7 @@ import { response } from "../types/response";
  * **URL:** `api/v{version}/items/:infoType`  
  * **Request method:** `GET`  
  * **Returns:** `RentItem[]` (populated)  
- * **Authorized:** partially `true`  
+ * **Authorized:** `true`  
  * 
  * **URL fields:**
  * 
@@ -23,7 +23,7 @@ import { response } from "../types/response";
  * 
  * **Header fields:**
  * 
- * - `authorization`: The authorization token, not required on unauthorized info types
+ * - `authorization`: The authorization query
  */
 export class GetRentItems extends Controller {
 

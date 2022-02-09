@@ -23,7 +23,7 @@ import { response } from "../types/response";
  * 
  * **Header fields:**
  * 
- * - `authorization`: The authorization token
+ * - `authorization`: The authorization query
  */
 export class PutCar extends Controller {
 

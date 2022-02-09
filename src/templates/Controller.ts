@@ -59,7 +59,7 @@ export abstract class Controller {
      * @param status The response status code
      * @param message The response message/object
      */
-    protected respond(response: response, status: Status, message?: any): void {
+    protected respond<T>(response: response, status: Status, message?: T): void {
         response.status(status).json({
             status,
             message

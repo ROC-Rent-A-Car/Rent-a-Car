@@ -3,7 +3,7 @@
  */
 export enum Conflict {
     INVALID_FIELDS = "Some fields are invalid",
-    INVALID_TOKEN = "Invalid token",
+    INVALID_AUTHORIZATION = "The provided authorization was not valid",
     INVALID_LOGIN = "Invalid login",
     TOKEN_ERROR = "There was a problem generating the token",
     IN_USE_ERROR = "Either the username or email is already in use",

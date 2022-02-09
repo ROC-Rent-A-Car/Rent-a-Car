@@ -27,7 +27,7 @@ import { response } from "../types/response";
  * 
  * **Header fields:**
  * 
- * - `authorization`: The authorization token, not required on unauthorized info types
+ * - `authorization`: The authorization query, not required on unauthorized info types
  */
 export class GetCars extends Controller {
 
