@@ -62,10 +62,11 @@ export class PatchCar extends Controller {
 
                         throw error;
                     } else {
-                        client.query(`UPDATE cars SET ${entries.map(([ key ], index) => `${key} = $${index + 2}`)} WHERE uuid = $1`, [
-                            request.params.carId,
-                            ...entries.map(([ _, value ]) => value)
-                        ]);
+                        client.query(`
+                            UPDATE cars 
+                            SET ${entries.map(([ key ], index) => `${key} = $${index + 2}`)} 
+                            WHERE uuid = $1
+                        `, [ request.params.carId, ...entries.map(([ _, value ]) => value) ]);
                     }
 
                     release();

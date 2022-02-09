@@ -57,7 +57,10 @@ export class PutUser extends Controller {
                     throw error;
                 } else {
                     // First making sure the username and email are unique
-                    if ((await client.query("SELECT uuid FROM users WHERE username = $1 OR email = $2", [ processed.username, processed.email ])).rowCount) {
+                    if ((await client.query("SELECT uuid FROM users WHERE username = $1 OR email = $2", [
+                        processed.username, 
+                        processed.email 
+                    ])).rowCount) {
                         this.respond(response, Status.CONFLICT, Conflict.IN_USE_ERROR);
                     } else {
                         // Stores the date for normalized results

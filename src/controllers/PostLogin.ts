@@ -44,7 +44,11 @@ export class PostLogin extends Controller {
 
                     throw error;
                 } else {
-                    const user = (await client.query<User>("SELECT * FROM users WHERE uuid = $1 AND username = $2 AND password_hash = $3", [
+                    const user = (await client.query<User>(`
+                        SELECT * 
+                        FROM users 
+                        WHERE uuid = $1 AND username = $2 AND password_hash = $3
+                    `, [
                         request.params.userId,
                         username.transform(),
                         password.transform()

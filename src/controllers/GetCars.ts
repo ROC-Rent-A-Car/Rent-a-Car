@@ -40,20 +40,38 @@ export class GetCars extends Controller {
 
         // Setting the query conditions
         switch (request.params.infoType.toLowerCase()) {
-            case "top":
+            case "top": {
                 // Joins a count of all foreign refs and then orders it in a descending order and puts all nulls at the end 
-                queryLogic = "LEFT JOIN (SELECT COUNT(uuid), car FROM rent_items GROUP BY car) as refs ON refs.car = cars.uuid ORDER BY refs.count DESC NULLS LAST";
+                queryLogic = `
+                    LEFT JOIN (
+                        SELECT COUNT(uuid), car FROM rent_items GROUP BY car
+                    ) as refs 
+                    ON refs.car = cars.uuid 
+                    ORDER BY refs.count DESC NULLS LAST
+                `;
                 break;
-            case "available":
+            }
+            case "available": {
                 // TODO: Check if the rent is still pending
-                queryLogic = "WHERE (SELECT COUNT(uuid) FROM rent_items WHERE car = cars.uuid AND rent_from <= now() AND (rent_from::DATE + days)::TIMESTAMP >= now()) = 0";
+                queryLogic = `
+                    WHERE (
+                        SELECT COUNT(uuid) 
+                        FROM rent_items 
+                        WHERE 
+                            car = cars.uuid AND rent_from <= now() AND 
+                            (rent_from::DATE + days)::TIMESTAMP >= now()
+                    ) = 0
+                `;
                 break;
-            case "all":
+            }
+            case "all": {
                 // Just use the default
                 break;
-            default:
+            }
+            default: {
                 // Not a valid info type so throw a conflict status
                 return this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
+            }
         }
 
         DB.connect(async (error, client, release) => {
