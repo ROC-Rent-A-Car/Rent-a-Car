@@ -1,10 +1,12 @@
 import { Status } from "std-node";
-import { DB } from "..";
 import { Conflict } from "../enums/Conflict";
 import { RequestMethod } from "../enums/RequestMethod";
+import { CarResponse } from "../interfaces/responses/CarResponse";
+import { Car } from "../interfaces/tables/Car";
 import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
 import { response } from "../types/response";
+import { Query } from "../utils/Query";
 
 /**
  * A car getter API controller which fetches all the cars which apply to a specified filter
@@ -35,8 +37,9 @@ export class GetCars extends Controller {
         super("/cars/:infoType", RequestMethod.GET);
     }
 
-    protected request(request: request, response: response): void {
-        let queryLogic: string;
+    protected async request(request: request, response: response): Promise<void> {
+        // TODO: Finish
+        let queryLogic: string | undefined;
 
         // Setting the query conditions
         switch (request.params.infoType.toLowerCase()) {
@@ -46,7 +49,7 @@ export class GetCars extends Controller {
                     LEFT JOIN (
                         SELECT COUNT(uuid), car FROM rent_items GROUP BY car
                     ) as refs 
-                    ON refs.car = cars.uuid 
+                        ON refs.car = cars.uuid 
                     ORDER BY refs.count DESC NULLS LAST
                 `;
                 break;
@@ -58,7 +61,8 @@ export class GetCars extends Controller {
                         SELECT COUNT(uuid) 
                         FROM rent_items 
                         WHERE 
-                            car = cars.uuid AND rent_from <= now() AND 
+                            car = cars.uuid AND 
+                            rent_from <= now() AND 
                             (rent_from::DATE + days)::TIMESTAMP >= now()
                     ) = 0
                 `;
@@ -66,25 +70,24 @@ export class GetCars extends Controller {
             }
             case "all": {
                 // Just use the default
+                queryLogic = "";
                 break;
-            }
-            default: {
-                // Not a valid info type so throw a conflict status
-                return this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
             }
         }
 
-        DB.connect(async (error, client, release) => {
-            if (error) {
-                this.respond(response, Status.INTERNAL_SERVER_ERROR);
-
-                throw error;
-            } else {
-                // Adding queryLogic behind it since it's not a user input and contains executable SQL
-                this.respond(response, Status.OK, (await client.query("SELECT cars.* FROM cars " + (queryLogic || ""))).rows);
-            }
-
-            release();
-        });
+        if (queryLogic) {
+            Query.create<Car>(`SELECT cars.* FROM cars ${queryLogic}`).then((cars) => this.respond<CarResponse[]>(response, Status.OK, cars.rows.map((car) => ({
+                uuid: car.uuid,
+                license: car.license,
+                brand: car.brand,
+                model: car.model,
+                price: Number(car.uuid),
+                image: car.image,
+                description: car.description
+            })))).catch(() => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS));
+        } else {
+            // Not a valid info type so throw a conflict status
+        this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
+        }
     }
 }

@@ -9,7 +9,7 @@ import { response } from "../types/response";
  * 
  * **URL:** `api/v{version}/pending/:rentId`  
  * **Request method:** `Patch`  
- * **Returns:** `Rent`  
+ * **Returns:** `void`  
  * **Authorized:** `true`  
  * 
  * **URL fields:**
@@ -30,7 +30,7 @@ export class PatchRentStatus extends Controller {
         super("/pending/:rentId", RequestMethod.PATCH);
     }
 
-    protected request(_: request, response: response): void {
+    protected async request(_: request, response: response): Promise<void> {
         this.respond(response, Status.NOT_IMPLEMENTED);
     }
 }

@@ -1,6 +1,7 @@
 import { Status } from "std-node";
 import { Conflict } from "../enums/Conflict";
 import { RequestMethod } from "../enums/RequestMethod";
+import { TokenInfoResponse } from "../interfaces/responses/TokenInfoResponse";
 import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
 import { response } from "../types/response";
@@ -33,10 +34,10 @@ export class GetAuthorization extends Controller {
             const result = await Authorize.getTokenInfo(userId, token);
 
             if (result) {
-                this.respond(response, Status.OK, {
-                    tokenExpiration: result.tokenExpiration.getTime(),
+                this.respond<TokenInfoResponse>(response, Status.OK, {
+                    tokenExpiration: result.token_expiration.getTime(),
                     token: result.token,
-                    permLevel: result.permLevel
+                    permLevel: result.perm_level
                 });
             } else {
                 this.respond(response, Status.UNAUTHORIZED, Conflict.INVALID_AUTHORIZATION);

@@ -1,12 +1,13 @@
-import { BetterObject, Status } from "std-node";
-import { DB } from "..";
+import { Status } from "std-node";
 import { Conflict } from "../enums/Conflict";
 import { PermLevel } from "../enums/PermLevel";
 import { RequestMethod } from "../enums/RequestMethod";
+import { Car } from "../interfaces/tables/Car";
 import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
 import { response } from "../types/response";
 import { Authorize } from "../utils/Authorize";
+import { Query } from "../utils/Query";
 import { QueryParser } from "../utils/QueryParser";
 
 /**
@@ -14,7 +15,7 @@ import { QueryParser } from "../utils/QueryParser";
  * 
  * **URL:** `api/v{version}/car/:carId`  
  * **Request method:** `Patch`  
- * **Returns:** `Car`  
+ * **Returns:** `void`  
  * **Authorized:** `true`  
  * 
  * **URL fields:**
@@ -42,38 +43,22 @@ export class PatchCar extends Controller {
         super("/car/:carId", RequestMethod.PATCH);
     }
 
-    protected request(request: request, response: response): void {
+    protected async request(request: request, response: response): Promise<void> {
         const { userId, token } = new QueryParser(request.headers.authorization || "");
 
         if (userId && token && Authorize.isAuthorized(userId, token, PermLevel.MANAGER)) {
-            const entries = BetterObject.entries({
+            Query.update<Car>({
                 license: request.body.license,
                 brand: request.body.brand,
                 model: request.body.model,
                 price: request.body.price,
                 image: request.body.image,
                 description: request.body.description,
-            }).filter(([ _, value ]) => value == undefined);
-
-            if (entries.length) {
-                DB.connect(async (error, client, release) => {
-                    if (error) {
-                        this.respond(response, Status.INTERNAL_SERVER_ERROR);
-
-                        throw error;
-                    } else {
-                        client.query(`
-                            UPDATE cars 
-                            SET ${entries.map(([ key ], index) => `${key} = $${index + 2}`)} 
-                            WHERE uuid = $1
-                        `, [ request.params.carId, ...entries.map(([ _, value ]) => value) ]);
-                    }
-
-                    release();
-                });
-            } else {
-                this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
-            }
+            }, "cars", request.params.carId).then(
+                () => this.respond(response, Status.ACCEPTED)
+            ).catch(
+                () => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS)
+            );
         } else {
             this.respond(response, Status.UNAUTHORIZED, Conflict.INVALID_AUTHORIZATION);
         }

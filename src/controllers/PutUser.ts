@@ -1,7 +1,8 @@
 import { Status, Token } from "std-node";
-import { DB, SETTINGS } from "..";
+import { SETTINGS } from "..";
 import { Conflict } from "../enums/Conflict";
 import { RequestMethod } from "../enums/RequestMethod";
+import { UserResponse } from "../interfaces/responses/UserResponse";
 import { User } from "../interfaces/tables/User";
 import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
@@ -10,6 +11,7 @@ import { Email } from "../utils/Email";
 import { Password } from "../utils/Password";
 import { PhoneNumber } from "../utils/PhoneNumber";
 import { PostalCode } from "../utils/PostalCode";
+import { Query } from "../utils/Query";
 import { Username } from "../utils/Username";
 
 /**
@@ -35,7 +37,7 @@ export class PutUser extends Controller {
         super("/user", RequestMethod.PUT);
     }
 
-    protected request(request: request, response: response): void {
+    protected async request(request: request, response: response): Promise<void> {
         // Collecting all fields in a single object to use array tools for small and fast checks
         const fields = {
             username: new Username(request.body.username),
@@ -49,55 +51,59 @@ export class PutUser extends Controller {
         if (Object.values(fields).every((field) => field.validate())) {
             // Transforming all fields
             const processed = Object.fromEntries(Object.entries(fields).map(([ key, value ]) => [ key, value.transform() ]));
-
-            DB.connect(async (error, client, release) => {
-                if (error) {
-                    this.respond(response, Status.INTERNAL_SERVER_ERROR);
-
-                    throw error;
+            
+            // First making sure the username and email are unique
+            Query.create("SELECT uuid FROM users WHERE username = $1 OR email = $2", [
+                processed.username, 
+                processed.email 
+            ]).then(({ rowCount }) => {
+                if (rowCount) {
+                    this.respond(response, Status.CONFLICT, Conflict.IN_USE_ERROR);
                 } else {
-                    // First making sure the username and email are unique
-                    if ((await client.query("SELECT uuid FROM users WHERE username = $1 OR email = $2", [
-                        processed.username, 
-                        processed.email 
-                    ])).rowCount) {
-                        this.respond(response, Status.CONFLICT, Conflict.IN_USE_ERROR);
-                    } else {
-                        // Stores the date for normalized results
-                        const date = new Date();
-                        // Inserts a new user entry with a new token and expiration date and returns it afterwards
-                        const user = (await client.query<User>(`
-                            INSERT INTO users 
-                            (username, password_hash, email, phone, postal_code, token, token_expiration) 
-                            VALUES 
-                            ($1, $2, $3, $4, $5, $6, $7)
-                            RETURNING *
-                        `, [
-                            processed.username,
-                            processed.password,
-                            processed.email,
-                            processed.phoneNumber,
-                            processed.postalCode,
-                            new Token(4).toString(),
-                            new Date(date.setDate(date.getDate() + SETTINGS.get("api").token_days_valid))
-                        ])).rows[0];
-
-                        this.respond(response, Status.OK, {
-                            uuid: user.uuid,
-                            username: user.username,
-                            email: user.email,
-                            phone: user.phone,
-                            postalCode: user.postal_code,
-                            permLevel: user.perm_level,
-                            renting: user.renting,
-                            token: user.token,
-                            tokenExpiration: user.token_expiration.getTime()
-                        });
-                    }
+                    // Stores the date for normalized results
+                    const date = new Date();
+                    // Inserts a new user entry with a new token and expiration date and returns it afterwards
+                    Query.create<User>(`
+                        INSERT INTO users 
+                        (
+                            username, 
+                            password_hash, 
+                            email, 
+                            phone, 
+                            postal_code, 
+                            token, 
+                            token_expiration
+                        ) VALUES (
+                            $1, 
+                            $2, 
+                            $3, 
+                            $4, 
+                            $5, 
+                            $6, 
+                            $7
+                        )
+                        RETURNING *
+                    `, [
+                        processed.username,
+                        processed.password,
+                        processed.email,
+                        processed.phoneNumber,
+                        processed.postalCode,
+                        new Token(4).toString(),
+                        new Date(date.setDate(date.getDate() + SETTINGS.get("api").token_days_valid))
+                    ]).then((users) => this.respond<UserResponse>(response, Status.CREATED, {
+                        uuid: users.rows[0].uuid,
+                        username: users.rows[0].username,
+                        email: users.rows[0].email,
+                        phone: users.rows[0].phone,
+                        postalCode: users.rows[0].postal_code,
+                        permLevel: users.rows[0].perm_level,
+                        renting: users.rows[0].renting,
+                        token: users.rows[0].token,
+                        tokenExpiration: new Date(users.rows[0].token_expiration).getTime()
+                    })).catch(() => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS));
                 }
-
-                release();
-            });
+            }).catch(() => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS));
         } else {
             // Some fields aren't correct
             this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);

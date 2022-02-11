@@ -1,7 +1,7 @@
 import { PermLevel } from "../../enums/PermLevel";
 
 export interface TokenInfo {
-    tokenExpiration: Date,
+    token_expiration: Date,
     token: string,
-    permLevel: PermLevel
+    perm_level: PermLevel
 }

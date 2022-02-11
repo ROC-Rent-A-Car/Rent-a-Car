@@ -31,7 +31,7 @@ export class PutCar extends Controller {
         super("/car", RequestMethod.PUT);
     }
 
-    protected request(_: request, response: response): void {
+    protected async request(_: request, response: response): Promise<void> {
         this.respond(response, Status.NOT_IMPLEMENTED);
     }
 }

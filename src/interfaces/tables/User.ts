@@ -10,5 +10,5 @@ export interface User extends TableBase {
     perm_level: PermLevel,
     renting: boolean,
     token: string,
-    token_expiration: Date
+    token_expiration: Date | string
 }

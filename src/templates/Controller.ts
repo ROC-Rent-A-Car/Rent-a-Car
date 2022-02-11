@@ -17,7 +17,7 @@ export abstract class Controller {
         // Uses request method as a key for the express instance to register the endpoint under the right method
         APP[
             <keyof typeof APP>RequestMethod[method].toLowerCase()
-        ](path, (request: request, response: response, next: next) => this.request(request, response, next));
+        ](path, (request: request, response: response, next: next) => this.request(request, response, next).catch(DevConsole.error));
 
         DevConsole.info("Registered \x1b[34m%s\x1b[0m as \x1b[34m%s\x1b[0m", path, RequestMethod[method]);
     }
@@ -28,7 +28,7 @@ export abstract class Controller {
      * @param response The response object provided by express
      * @param next The next callback provided by express
      */
-    protected abstract request(request: request, response: response, next: next): void;
+    protected abstract request(request: request, response: response, next: next): Promise<void>;
 
     /**
      * A method which constructs a standard response object
@@ -40,6 +40,6 @@ export abstract class Controller {
         response.status(status).json({
             status,
             message
-        })
+        });
     }
 }

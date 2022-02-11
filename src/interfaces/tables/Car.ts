@@ -4,7 +4,7 @@ export interface Car extends TableBase {
     license: string,
     brand: string,
     model: string,
-    price: number,
+    price: number | string,
     image: string,
     description: string | null
 }

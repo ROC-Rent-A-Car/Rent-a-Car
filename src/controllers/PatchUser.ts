@@ -37,7 +37,7 @@ export class PatchUser extends Controller {
         super("/user/:overwriteId?", RequestMethod.PATCH);
     }
 
-    protected request(_: request, response: response): void {
+    protected async request(_: request, response: response): Promise<void> {
         this.respond(response, Status.NOT_IMPLEMENTED);
     }
 }
