@@ -20,6 +20,7 @@ The settings are expected to be specified in the `settings.json` file on the pro
 | `version`              | `number` | `api`  | The version of the current API. This will be used in the URL              |
 | `token_days_valid`     | `number` | `api`  | The number of days that a token should be considered valid                |
 | `token_refresh_margin` | `number` | `api`  | Adds margin to auto-refresh the token before its expiration upon activity |
+| `max_pending`          | `number` | `api`  | The number of days before a pending rent entry is considered invalid      |
 
 ## Environment Variables
 
