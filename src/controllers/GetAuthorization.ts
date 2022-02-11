@@ -27,23 +27,27 @@ export class GetAuthorization extends Controller {
     }
 
     protected async request(request: request, response: response): Promise<void> {
+        // Parse the authorization header query
         const { userId, token } = new QueryParser(request.headers.authorization || "");
 
+        // Check if the authorization header has the required fields
         if (userId && token) {
-            // Find a user which has the provided credentials
-            const result = await Authorize.getTokenInfo(userId, token);
+            // Get info about the current user token
+            const tokenInfo = await Authorize.getTokenInfo(userId, token);
 
-            if (result) {
+            if (tokenInfo) {
                 this.respond<TokenInfoResponse>(response, Status.OK, {
-                    tokenExpiration: result.token_expiration.getTime(),
-                    token: result.token,
-                    permLevel: result.perm_level
+                    tokenExpiration: tokenInfo.token_expiration.getTime(),
+                    token: tokenInfo.token,
+                    permLevel: tokenInfo.perm_level
                 });
             } else {
+                // The authorization wasn't valid
                 this.respond(response, Status.UNAUTHORIZED, Conflict.INVALID_AUTHORIZATION);
             }
         } else {
-            this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
+            // The authorization header was incorrect
+            this.respond(response, Status.UNAUTHORIZED, Conflict.INVALID_AUTHORIZATION);
         }
     }
 }

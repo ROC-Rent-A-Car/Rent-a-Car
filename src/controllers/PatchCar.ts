@@ -44,8 +44,10 @@ export class PatchCar extends Controller {
     }
 
     protected async request(request: request, response: response): Promise<void> {
+        // Parse the authorization header query
         const { userId, token } = new QueryParser(request.headers.authorization || "");
 
+        // Check if the authorization header has the required fields and has the correct permission level
         if (userId && token && Authorize.isAuthorized(userId, token, PermLevel.MANAGER)) {
             Query.update<Car>({
                 license: request.body.license,
@@ -60,6 +62,7 @@ export class PatchCar extends Controller {
                 () => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS)
             );
         } else {
+            // The authorization header was incorrect or the user didn't have the correct permission level
             this.respond(response, Status.UNAUTHORIZED, Conflict.INVALID_AUTHORIZATION);
         }
     }

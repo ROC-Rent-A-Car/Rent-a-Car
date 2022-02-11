@@ -37,7 +37,8 @@ export class PostLogin extends Controller {
         const username = new Username(request.body.username);
         const password = new Password(request.body.password);
 
-        if (username.validate() && password.validate() && /\d+/.test(request.params.userId)) {
+        // Validate the fields
+        if (username.validate() && password.validate() && request.params.userId) {
             // Find a user which has the provided credentials
             Query.create<User>(`
                 SELECT * 
@@ -50,24 +51,26 @@ export class PostLogin extends Controller {
                 request.params.userId,
                 username.transform(),
                 password.transform()
-            ]).then((users) => {
-                if (users.rowCount) {
+            ]).then(({ rows: [ user ], rowCount }) => {
+                if (rowCount) {
                     this.respond<UserResponse>(response, Status.OK, {
-                        uuid: users.rows[0].uuid,
-                        username: users.rows[0].username,
-                        email: users.rows[0].email,
-                        phone: users.rows[0].phone,
-                        postalCode: users.rows[0].postal_code,
-                        permLevel: users.rows[0].perm_level,
-                        renting: users.rows[0].renting,
-                        token: users.rows[0].token,
-                        tokenExpiration: new Date(users.rows[0].token_expiration).getTime()
+                        uuid: user.uuid,
+                        username: user.username,
+                        email: user.email,
+                        phone: user.phone,
+                        postalCode: user.postal_code,
+                        permLevel: user.perm_level,
+                        renting: user.renting,
+                        token: user.token,
+                        tokenExpiration: new Date(user.token_expiration).getTime()
                     });
                 } else {
+                    // The provided login didn't give any results
                     this.respond(response, Status.UNAUTHORIZED, Conflict.INVALID_LOGIN);
                 }
             }).catch(() => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS));
         } else {
+            // Some fields were missing or weren't formatted correctly
             this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
         }
     }

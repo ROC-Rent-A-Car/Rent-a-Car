@@ -91,16 +91,16 @@ export class PutUser extends Controller {
                         processed.postalCode,
                         new Token(4).toString(),
                         new Date(date.setDate(date.getDate() + SETTINGS.get("api").token_days_valid))
-                    ]).then((users) => this.respond<UserResponse>(response, Status.CREATED, {
-                        uuid: users.rows[0].uuid,
-                        username: users.rows[0].username,
-                        email: users.rows[0].email,
-                        phone: users.rows[0].phone,
-                        postalCode: users.rows[0].postal_code,
-                        permLevel: users.rows[0].perm_level,
-                        renting: users.rows[0].renting,
-                        token: users.rows[0].token,
-                        tokenExpiration: new Date(users.rows[0].token_expiration).getTime()
+                    ]).then(({ rows: [ user ] }) => this.respond<UserResponse>(response, Status.CREATED, {
+                        uuid: user.uuid,
+                        username: user.username,
+                        email: user.email,
+                        phone: user.phone,
+                        postalCode: user.postal_code,
+                        permLevel: user.perm_level,
+                        renting: user.renting,
+                        token: user.token,
+                        tokenExpiration: new Date(user.token_expiration).getTime()
                     })).catch(() => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS));
                 }
             }).catch(() => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS));

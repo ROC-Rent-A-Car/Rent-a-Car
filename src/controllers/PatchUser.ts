@@ -51,7 +51,9 @@ export class PatchUser extends Controller {
         // Parse the authorization header query
         const { userId, token } = new QueryParser(request.headers.authorization || "");
 
+        // Check if the authorization header has the required fields
         if (userId && token) {
+            // Get info about the current user token
             const tokenInfo = await Authorize.getTokenInfo(userId, token);
 
             if (!tokenInfo) {
@@ -84,7 +86,7 @@ export class PatchUser extends Controller {
             }
         } else {
             // The authorization header was incorrect
-            this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
+            this.respond(response, Status.UNAUTHORIZED, Conflict.INVALID_AUTHORIZATION);
         }
     }
 }

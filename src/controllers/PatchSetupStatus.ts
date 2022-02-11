@@ -37,20 +37,25 @@ export class PatchSetupStatus extends Controller {
     }
 
     protected async request(request: request, response: response): Promise<void> {
+        // Parse the authorization header query
         const { userId, token } = new QueryParser(request.headers.authorization || "");
 
+        // Check if the authorization header has the required fields and has the correct permission level
         if (userId && token && Authorize.isAuthorized(userId, token, PermLevel.EMPLOYEE)) {
             if (request.body.status) {
+                // Parsing the status bool string
                 const bool = request.body.status == "1" || request.body.status.toLowerCase() == "true";
 
                 Query.create("UPDATE rent_items SET setup = $1 WHERE uuid = $2", [
                     bool,
                     request.params.itemId
                 ]).then(() => this.respond(response, Status.ACCEPTED)).catch(() => this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS));
-            } else {                
+            } else {
+                // Missing the status field                
                 this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
             }
         } else {
+            // The authorization header was incorrect or the user didn't have the correct permission level
             this.respond(response, Status.CONFLICT, Conflict.INVALID_AUTHORIZATION);
         }
     }

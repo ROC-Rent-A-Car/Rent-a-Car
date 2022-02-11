@@ -27,21 +27,22 @@ export class Authorize {
             `, [
                 token,
                 uuid
-            ]).then((tokenInfos) => {
+            ]).then(({ rowCount, rows: [ tokenInfo ] }) => {
                 const date = new Date();
                 const apiSettings = SETTINGS.get("api");
 
                 // If the token is valid, check if it should be refreshed according to the API settings
                 if (
-                    tokenInfos.rowCount && 
-                    new Date(tokenInfos.rows[0].token_expiration).setDate(
-                        tokenInfos.rows[0].token_expiration.getDate() - apiSettings.token_refresh_margin
+                    rowCount && 
+                    new Date(tokenInfo.token_expiration).setDate(
+                        tokenInfo.token_expiration.getDate() - apiSettings.token_refresh_margin
                     ) <= date.getTime()
                 ) {
+                    // Update the date
                     date.setDate(date.getDate() + apiSettings.token_days_valid);
 
-                    tokenInfos.rows[0].token_expiration = date;
-                    tokenInfos.rows[0].token = new Token(4).toString();
+                    tokenInfo.token_expiration = date;
+                    tokenInfo.token = new Token(4).toString();
 
                     Query.create<TokenInfo>(`
                         UPDATE users 
@@ -50,17 +51,24 @@ export class Authorize {
                             token_expiration = $2 
                         WHERE uuid = $3
                     `, [
-                        tokenInfos.rows[0].token,
-                        tokenInfos.rows[0].token_expiration,
+                        tokenInfo.token,
+                        tokenInfo.token_expiration,
                         uuid
                     ]).then((newTokenInfo) => resolve(newTokenInfo.rows[0] ?? null)).catch(() => resolve(null));
                 } else {
-                    resolve(tokenInfos.rows[0] ?? null);
+                    resolve(tokenInfo ?? null);
                 }
             }).catch(() => resolve(null));
         });
     }
 
+    /**
+     * Validates if the user is authorized according to the permission level
+     * @param uuid The user UUID
+     * @param token The user authorization token
+     * @param level The required permission level
+     * @returns A promised boolean which says if the user has the correct permission level
+     */
     public static async isAuthorized(uuid: string, token: string, level: PermLevel): Promise<boolean> {
         return ((await this.getTokenInfo(uuid, token))?.perm_level || -1) >= level;
     }

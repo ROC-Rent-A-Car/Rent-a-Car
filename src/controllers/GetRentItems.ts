@@ -40,22 +40,29 @@ export class GetRentItems extends Controller {
     }
 
     protected async request(request: request, response: response): Promise<void> {
+        // Parse the authorization header query
         const { userId, token } = new QueryParser(request.headers.authorization || "");
 
+        // Check if the authorization header has the required fields
         if (userId && token) {
+            // Get info about the current user token
             const tokenInfo = await Authorize.getTokenInfo(userId, token);
             const params: JSONPrimitive[] = [];
             let additionalLogic: string | undefined;
 
-            if (tokenInfo && PermLevel[tokenInfo.perm_level]) {
+            if (tokenInfo) {
+                // Check if the current user has only user level permissions
                 if (tokenInfo.perm_level == PermLevel.USER) {
                     switch (request.params.infoType) {
                         case "pending": {
+                            // Gets all pending items which haven't expired from the user
                             additionalLogic = "r_u.user = $1 AND r_u.pending = true AND (r_u.pending_since::DATE + ($2)::INTEGER)::TIMESTAMP > now()";
                             params.push(userId, SETTINGS.get("api").max_pending);
                             break;
                         }
                         case "rent": {
+                            // TODO: Add returned entry to rent items
+                            // Gets all rent items from a rent entry from the user which was used as well
                             if (request.params.uuid) {
                                 additionalLogic = "r_u.pending = false AND r_u.user = $1 AND ri.rent = $2";
                                 params.push(userId, request.params.uuid);
@@ -66,20 +73,25 @@ export class GetRentItems extends Controller {
                 } else {
                     switch (request.params.infoType) {
                         case "pending": {
+                             // Gets all pending items which haven't expired
                             additionalLogic = "r_u.pending = true AND (r_u.pending_since::DATE + ($1)::INTEGER)::TIMESTAMP > now()";
                             params.push(SETTINGS.get("api").max_pending);
                             break;
                         }
                         case "setup": {
+                             // Gets all items which should be set up on the current date
                             additionalLogic = "r_u.pending = false AND ri.setup = false AND ri.rent_from::DATE = CURRENT_DATE";
                             break;
                         }
                         case "overdue": {
                             // TODO: Add returned entry to rent items
+                             // Gets all items which should've been returned
                             additionalLogic = "r_u.pending = false AND (ri.rent_from::DATE + ri.days)::TIMESTAMP <= now()";
                             break;
                         }
                         case "rent": {
+                            // TODO: Add returned entry to rent items
+                            // Gets all rent items from a rent entry which was used
                             if (request.params.uuid) {
                                 additionalLogic = "ri.rent = $1";
                                 params.push(request.params.uuid);
@@ -87,6 +99,7 @@ export class GetRentItems extends Controller {
                             break;
                         }
                         case "car": {
+                            // Gets all rent items from 
                             if (request.params.uuid) {
                                 additionalLogic = "ri.car = $1";
                                 params.push(request.params.uuid);
@@ -115,7 +128,7 @@ export class GetRentItems extends Controller {
                         ) as r_u
                             ON ri.rent = r_u.uuid
                         WHERE ${additionalLogic}
-                    `, params).then((items) => this.respond<RentItemResponse[]>(response, Status.OK, items.rows.map((item) => ({
+                    `, params).then(({ rows }) => this.respond<RentItemResponse[]>(response, Status.OK, rows.map((item) => ({
                         uuid: item.uuid,
                         days: item.days,
                         rentFrom: new Date(item.rent_from).getTime(),
@@ -148,13 +161,16 @@ export class GetRentItems extends Controller {
                         }
                     })))).catch(() => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS));
                 } else {
+                    // The logic wasn't set which means either an info type outside the permission level or an invalid type was requested
                     this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
                 }
             } else {
+                // The authorization wasn't valid
                 this.respond(response, Status.UNAUTHORIZED, Conflict.INVALID_AUTHORIZATION);
             }
         } else {
-            this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
+            // The authorization header was incorrect
+            this.respond(response, Status.UNAUTHORIZED, Conflict.INVALID_AUTHORIZATION);
         }
     }
 }
