@@ -35,6 +35,7 @@ export class GetAuthorization extends Controller {
             // Get info about the current user token
             const tokenInfo = await Authorize.getTokenInfo(userId, token);
 
+            // Check if there was a token match
             if (tokenInfo) {
                 this.respond<TokenInfoResponse>(response, Status.OK, {
                     tokenExpiration: tokenInfo.token_expiration.getTime(),

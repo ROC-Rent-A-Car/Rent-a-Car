@@ -50,6 +50,7 @@ export class GetRentItems extends Controller {
             const params: JSONPrimitive[] = [];
             let additionalLogic: string | undefined;
 
+            // Check if there was a token match
             if (tokenInfo) {
                 // Check if the current user has only user level permissions
                 if (tokenInfo.perm_level == PermLevel.USER) {
