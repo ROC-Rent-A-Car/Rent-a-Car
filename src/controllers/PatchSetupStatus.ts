@@ -42,14 +42,17 @@ export class PatchSetupStatus extends Controller {
 
         // Check if the authorization header has the required fields and has the correct permission level
         if (userId && token && Authorize.isAuthorized(userId, token, PermLevel.EMPLOYEE)) {
+            // Validate the fields
             if (request.body.status) {
-                // Parsing the status bool string
-                const bool = request.body.status == "1" || request.body.status.toLowerCase() == "true";
-
                 Query.create("UPDATE rent_items SET setup = $1 WHERE uuid = $2", [
-                    bool,
+                    // Parsing the status bool string
+                    request.body.status == "1" || request.body.status.toLowerCase() == "true",
                     request.params.itemId
-                ]).then(() => this.respond(response, Status.ACCEPTED)).catch(() => this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS));
+                ]).then(
+                    () => this.respond(response, Status.ACCEPTED)
+                ).catch(
+                    () => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS)
+                );
             } else {
                 // Missing the status field                
                 this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
