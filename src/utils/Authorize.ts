@@ -63,13 +63,31 @@ export class Authorize {
     }
 
     /**
-     * Validates if the user is authorized according to the permission level
+     * Validates if the user entry is authorized according to the required permission level
      * @param uuid The user UUID
      * @param token The user authorization token
-     * @param level The required permission level
+     * @param requiredLevel The required permission level
      * @returns A promised boolean which says if the user has the correct permission level
      */
-    public static async isAuthorized(uuid: string, token: string, level: PermLevel): Promise<boolean> {
-        return ((await this.getTokenInfo(uuid, token))?.perm_level || -1) >= level;
+    public static async isAuthorized(uuid: string, token: string, requiredLevel: PermLevel): Promise<boolean>;
+    /**
+     * Validates if the provided level is authorized according to the required permission level
+     * @param userLevel The user permission level
+     * @param requiredLevel The required permission level
+     * @returns A boolean which says if the user has the correct permission level
+     */
+    public static isAuthorized(userLevel: PermLevel, requiredLevel: PermLevel): boolean 
+    public static isAuthorized(uuidOrUserLevel: string | PermLevel, tokenOrRequiredLevel: string | PermLevel, requiredLevel?: PermLevel): Promise<boolean> | boolean {
+        if (typeof uuidOrUserLevel == "string" && typeof tokenOrRequiredLevel == "string" && requiredLevel) {
+            return new Promise(async (resolve) => {
+                const userLevel = (await this.getTokenInfo(uuidOrUserLevel, tokenOrRequiredLevel))?.perm_level ?? -1;
+
+                resolve(userLevel != PermLevel.DISABLED && requiredLevel != PermLevel.DISABLED && userLevel >= requiredLevel);
+            });
+        } else if (typeof uuidOrUserLevel == "number" && typeof tokenOrRequiredLevel == "number" && !requiredLevel) {
+            return uuidOrUserLevel != PermLevel.DISABLED && tokenOrRequiredLevel != PermLevel.DISABLED && uuidOrUserLevel >= tokenOrRequiredLevel;
+        } else {
+            return false;
+        }
     }
 }

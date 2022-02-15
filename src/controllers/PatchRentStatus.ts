@@ -1,6 +1,6 @@
 import { Status } from "std-node";
+import { SETTINGS } from "..";
 import { Conflict } from "../enums/Conflict";
-import { PermLevel } from "../enums/PermLevel";
 import { RequestMethod } from "../enums/RequestMethod";
 import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
@@ -55,7 +55,7 @@ export class PatchRentStatus extends Controller {
                         request.params.itemId
                     ];
 
-                    if (tokenInfo.perm_level == PermLevel.USER) {
+                    if (!Authorize.isAuthorized(tokenInfo.perm_level, SETTINGS.get("api").rent_status_toggle_permission)) {
                         query += " AND user = $3";
                         
                         params.push(userId);

@@ -1,7 +1,6 @@
-import { JSONPrimitive, Status } from "std-node";
+import { JSONPrimitive, Status, BetterObject, callback } from "std-node";
 import { SETTINGS } from "..";
 import { Conflict } from "../enums/Conflict";
-import { PermLevel } from "../enums/PermLevel";
 import { RequestMethod } from "../enums/RequestMethod";
 import { RentItemResponse } from "../interfaces/responses/RentItemResponse";
 import { RentItem } from "../interfaces/tables/RentItem";
@@ -47,18 +46,69 @@ export class GetRentItems extends Controller {
         if (userId && token) {
             // Get info about the current user token
             const tokenInfo = await Authorize.getTokenInfo(userId, token);
-            const params: JSONPrimitive[] = [];
-            let additionalLogic: string | undefined;
 
             // Check if there was a token match
             if (tokenInfo) {
-                // Check if the current user has only user level permissions
-                if (tokenInfo.perm_level == PermLevel.USER) {
+                const { 
+                    rent_history_permission, 
+                    rent_administration_permission, 
+                    max_pending 
+                } = SETTINGS.get("api");
+                const params: JSONPrimitive[] = [];
+                const history: BetterObject<callback<string>> = {
+                    rent: () => {
+                        // Gets all rent items from a rent entry which was used
+                        params.push(request.params.uuid);
+                        
+                        return "ri.rent = $1";
+                    },
+                    car: () => {
+                        // Gets all rent items from 
+                        params.push(request.params.uuid);
+                        
+                        return "ri.car = $1";
+                    }
+                };
+                const administrative: BetterObject<callback<string>> = {
+                    pending: () => {
+                        params.push(max_pending);
+                        
+                        // Gets all pending items which haven't expired
+                        return "r_u.pending = true AND (r_u.pending_since::DATE + ($1)::INTEGER)::TIMESTAMP > now()";
+                    },
+                    setup: () => {
+                        // Gets all items which should be set up on the current date
+                        return "r_u.pending = false AND ri.setup = false AND ri.rent_from::DATE = CURRENT_DATE"
+                    },
+                    overdue: () => {
+                        // TODO: Add returned entry to rent items
+                        // Gets all items which should've been returned
+                        return "r_u.pending = false AND (ri.rent_from::DATE + ri.days)::TIMESTAMP <= now()";
+                    }
+                };
+                let additionalLogic: string | undefined;
+
+                if (
+                    request.params.uuid && 
+                    request.params.infoType in history && 
+                    Authorize.isAuthorized(tokenInfo.perm_level, rent_history_permission)
+                ) {
+                    additionalLogic = history[request.params.infoType]();
+                } else if (
+                    request.params.infoType in administrative && 
+                    Authorize.isAuthorized(tokenInfo.perm_level, rent_administration_permission)
+                ) {
+                    additionalLogic = administrative[request.params.infoType]();
+                } else {
                     switch (request.params.infoType) {
                         case "pending": {
                             // Gets all pending items which haven't expired from the user
-                            additionalLogic = "r_u.user = $1 AND r_u.pending = true AND (r_u.pending_since::DATE + ($2)::INTEGER)::TIMESTAMP > now()";
-                            params.push(userId, SETTINGS.get("api").max_pending);
+                            additionalLogic = `
+                                r_u.user = $1 AND 
+                                r_u.pending = true AND 
+                                (r_u.pending_since::DATE + ($2)::INTEGER)::TIMESTAMP > now()
+                            `;
+                            params.push(userId, max_pending);
                             break;
                         }
                         case "rent": {
@@ -67,43 +117,6 @@ export class GetRentItems extends Controller {
                             if (request.params.uuid) {
                                 additionalLogic = "r_u.pending = false AND r_u.user = $1 AND ri.rent = $2";
                                 params.push(userId, request.params.uuid);
-                            }
-                            break;
-                        }
-                    }
-                } else {
-                    switch (request.params.infoType) {
-                        case "pending": {
-                             // Gets all pending items which haven't expired
-                            additionalLogic = "r_u.pending = true AND (r_u.pending_since::DATE + ($1)::INTEGER)::TIMESTAMP > now()";
-                            params.push(SETTINGS.get("api").max_pending);
-                            break;
-                        }
-                        case "setup": {
-                             // Gets all items which should be set up on the current date
-                            additionalLogic = "r_u.pending = false AND ri.setup = false AND ri.rent_from::DATE = CURRENT_DATE";
-                            break;
-                        }
-                        case "overdue": {
-                            // TODO: Add returned entry to rent items
-                             // Gets all items which should've been returned
-                            additionalLogic = "r_u.pending = false AND (ri.rent_from::DATE + ri.days)::TIMESTAMP <= now()";
-                            break;
-                        }
-                        case "rent": {
-                            // TODO: Add returned entry to rent items
-                            // Gets all rent items from a rent entry which was used
-                            if (request.params.uuid) {
-                                additionalLogic = "ri.rent = $1";
-                                params.push(request.params.uuid);
-                            }
-                            break;
-                        }
-                        case "car": {
-                            // Gets all rent items from 
-                            if (request.params.uuid) {
-                                additionalLogic = "ri.car = $1";
-                                params.push(request.params.uuid);
                             }
                             break;
                         }

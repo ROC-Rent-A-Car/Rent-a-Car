@@ -13,6 +13,13 @@
     "version": 1,
     "token_days_valid": 7,
     "token_refresh_margin": 2,
-    "max_pending": 7
+    "max_pending": 7,
+    "change_perm_level_permission": 2,
+    "car_creation_permission": 2,
+    "car_edit_permission": 2,
+    "setup_status_toggle_permission": 1,
+    "rent_status_toggle_permission": 1,
+    "rent_history_permission": 1,
+    "rent_administration_permission": 1
   }
 }

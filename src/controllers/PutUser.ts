@@ -29,7 +29,6 @@ import { Username } from "../utils/Username";
  * - `email`: The email string
  * - `phone`: The phone number string
  * - `postal`: The postal code string
- * - `permLevel` The permission level number 
  */
 export class PutUser extends Controller {
 

@@ -1,5 +1,6 @@
 export enum PermLevel {
-    USER = 0,
-    EMPLOYEE = 1,
-    MANAGER = 2
+    DISABLED = -1, // Starting with -1 to follow standards
+    USER,
+    EMPLOYEE,
+    MANAGER
 }

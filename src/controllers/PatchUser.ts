@@ -1,6 +1,6 @@
 import { Status } from "std-node";
+import { SETTINGS } from "..";
 import { Conflict } from "../enums/Conflict";
-import { PermLevel } from "../enums/PermLevel";
 import { RequestMethod } from "../enums/RequestMethod";
 import { User } from "../interfaces/tables/User";
 import { Controller } from "../templates/Controller";
@@ -59,7 +59,7 @@ export class PatchUser extends Controller {
             if (!tokenInfo) {
                 // The authorization wasn't valid
                 this.respond(response, Status.UNAUTHORIZED, Conflict.INVALID_AUTHORIZATION);
-            } else if (tokenInfo.perm_level == PermLevel.MANAGER && request.params.overwriteId) {
+            } else if (Authorize.isAuthorized(tokenInfo.perm_level, SETTINGS.get("api").change_perm_level_permission)) {
                 // If there's an ID overwrite it's only used to overwrite the permission level
                 Query.update<User>({
                     perm_level: request.body.permLevel
@@ -71,7 +71,12 @@ export class PatchUser extends Controller {
                 const postal = request.body.password ? new PostalCode(request.body.postal) : undefined;
 
                 // A XOR ish system which becomes automatically true if the variable is undefined but remails false if validate returns false
-                if ((password?.validate() ?? true) && (email?.validate() ?? true) && (phone?.validate() ?? true) && (postal?.validate() ?? true)) {
+                if (
+                    (password?.validate() ?? true) && 
+                    (email?.validate() ?? true) && 
+                    (phone?.validate() ?? true) && 
+                    (postal?.validate() ?? true)
+                ) {
                     Query.update<User>({
                         username: request.body.username,
                         password_hash: password?.transform(),
