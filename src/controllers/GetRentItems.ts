@@ -89,9 +89,8 @@ export class GetRentItems extends Controller {
                         return "r_u.pending = false AND ri.setup = false AND ri.rent_from::DATE = CURRENT_DATE"
                     },
                     overdue: () => {
-                        // TODO: Add returned entry to rent items
                         // Gets all items which should've been returned
-                        return "r_u.pending = false AND (ri.rent_from::DATE + ri.days)::TIMESTAMP <= now()";
+                        return "r_u.pending = false AND (ri.rent_from::DATE + ri.days)::TIMESTAMP <= now() AND ri.returned = FALSE";
                     }
                 };
                 let additionalLogic: string | undefined;
@@ -120,7 +119,6 @@ export class GetRentItems extends Controller {
                             break;
                         }
                         case "rent": {
-                            // TODO: Add returned entry to rent items
                             // Gets all rent items from a rent entry from the user which was used as well
                             if (request.params.uuid) {
                                 additionalLogic = "r_u.pending = false AND r_u.user = $1 AND ri.rent = $2";
