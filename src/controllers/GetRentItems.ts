@@ -25,8 +25,9 @@ import { QueryParser } from "../utils/QueryParser";
  *   - `pending`: All the rent items which are currently pending
  *   - `setup`: All the rent items which should be setup during that day
  *   - `overdue`: All the rent items which aren't returned yet
- *   - `rent`: with rent UUID, Gets all rent items which are a foreign reference to the specified rent UUID
- *   - `car`: with car UUID, Gets all rent items which are a foreign reference to the specified car UUID
+ *   - `user`: With optionally user UUID, Gets all rent items which were recently hired
+ *   - `rent`: With rent UUID, Gets all rent items which are a foreign reference to the specified rent UUID
+ *   - `car`: With car UUID, Gets all rent items which are a foreign reference to the specified car UUID
  * 
  * **Header fields:**
  * 
@@ -49,6 +50,7 @@ export class GetRentItems extends Controller {
 
             // Check if there was a token match
             if (tokenInfo) {
+                const normalInfoType = request.params.infoType?.toLowerCase();
                 const { 
                     rent_history_permission, 
                     rent_administration_permission, 
@@ -56,14 +58,20 @@ export class GetRentItems extends Controller {
                 } = SETTINGS.get("api");
                 const params: JSONPrimitive[] = [];
                 const history: BetterObject<callback<string>> = {
+                    user: () => {
+                        // Gets all rent items from a user entry
+                        params.push(request.params.uuid);
+
+                        return "r_u.user = $1";
+                    },
                     rent: () => {
-                        // Gets all rent items from a rent entry which was used
+                        // Gets all rent items from a rent entry
                         params.push(request.params.uuid);
                         
                         return "ri.rent = $1";
                     },
                     car: () => {
-                        // Gets all rent items from 
+                        // Gets all rent items from a car entry
                         params.push(request.params.uuid);
                         
                         return "ri.car = $1";
@@ -90,17 +98,17 @@ export class GetRentItems extends Controller {
 
                 if (
                     request.params.uuid && 
-                    request.params.infoType in history && 
+                    normalInfoType in history && 
                     Authorize.isAuthorized(tokenInfo.perm_level, rent_history_permission)
                 ) {
-                    additionalLogic = history[request.params.infoType]();
+                    additionalLogic = history[normalInfoType]();
                 } else if (
-                    request.params.infoType in administrative && 
+                    normalInfoType in administrative && 
                     Authorize.isAuthorized(tokenInfo.perm_level, rent_administration_permission)
                 ) {
-                    additionalLogic = administrative[request.params.infoType]();
+                    additionalLogic = administrative[normalInfoType]();
                 } else {
-                    switch (request.params.infoType) {
+                    switch (normalInfoType) {
                         case "pending": {
                             // Gets all pending items which haven't expired from the user
                             additionalLogic = `
@@ -118,6 +126,11 @@ export class GetRentItems extends Controller {
                                 additionalLogic = "r_u.pending = false AND r_u.user = $1 AND ri.rent = $2";
                                 params.push(userId, request.params.uuid);
                             }
+                            break;
+                        }
+                        case "user": {
+                            additionalLogic = "r_u.user = $1";
+                            params.push(userId);
                             break;
                         }
                     }
@@ -142,6 +155,7 @@ export class GetRentItems extends Controller {
                         ) as r_u
                             ON ri.rent = r_u.uuid
                         WHERE ${additionalLogic}
+                        ORDER BY ri.rent_from DESC
                     `, params).then(({ rows }) => this.respond<RentItemResponse[]>(response, Status.OK, rows.map((item) => ({
                         uuid: item.uuid,
                         days: item.days,
