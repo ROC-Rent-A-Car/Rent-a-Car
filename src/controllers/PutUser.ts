@@ -63,8 +63,7 @@ export class PutUser extends Controller {
                     const date = new Date();
                     // Inserts a new user entry with a new token and expiration date and returns it afterwards
                     Query.create<User>(`
-                        INSERT INTO users 
-                        (
+                        INSERT INTO users (
                             username, 
                             password_hash, 
                             email, 
@@ -80,8 +79,7 @@ export class PutUser extends Controller {
                             $5, 
                             $6, 
                             $7
-                        )
-                        RETURNING *
+                        ) RETURNING *
                     `, [
                         processed.username,
                         processed.password,
