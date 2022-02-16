@@ -1,4 +1,5 @@
-import { Status } from "std-node";
+import { JSONPrimitive, Status } from "std-node";
+import { SETTINGS } from "..";
 import { Conflict } from "../enums/Conflict";
 import { RequestMethod } from "../enums/RequestMethod";
 import { CarResponse } from "../interfaces/responses/CarResponse";
@@ -6,39 +7,36 @@ import { Car } from "../interfaces/tables/Car";
 import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
 import { response } from "../types/response";
+import { Authorize } from "../utils/Authorize";
 import { Query } from "../utils/Query";
+import { QueryParser } from "../utils/QueryParser";
 
 /**
  * A car getter API controller which fetches all the cars which apply to a specified filter
  * 
- * **URL:** `api/v{version}/cars/:infoType`  
+ * **URL:** `api/v{version}/cars/:infoType/:uuid?`  
  * **Request method:** `GET`  
  * **Returns:** `Car[]`  
- * **Authorized:** partially `true`  
+ * **Authorized:** `false`  
  * 
  * **URL fields:**
  * 
  * - `infoType`: The type of info which should be returned, this can be:
  *   - `top`: All the cars ordered by most rented
  *   - `available`: The currently available cars
- *   - `all`: All the cars without order
  *   - `cheapest`: All the cars ordered by cheapest price
  *   - `expensive`: All the cars ordered by the most expensive price
- *   - `setup` (authorized): All cars which should be setup that day
- *   - `recent` (authorized): All the recent rents from the user
- * 
- * **Header fields:**
- * 
- * - `authorization`: The authorization query, not required on unauthorized info types
+ *   - `all`: All the cars without order
  */
 export class GetCars extends Controller {
 
     constructor() {
-        super("/cars/:infoType", RequestMethod.GET);
+        super("/cars/:infoType/:uuid?", RequestMethod.GET);
     }
 
     protected async request(request: request, response: response): Promise<void> {
-        // TODO: Finish
+        const apiSettings = SETTINGS.get("api");
+        const params: JSONPrimitive[] = [];
         let queryLogic: string | undefined;
 
         // Setting the query conditions
@@ -66,6 +64,15 @@ export class GetCars extends Controller {
                             (rent_from::DATE + days)::TIMESTAMP >= now()
                     ) = 0
                 `;
+                params.push();
+                break;
+            }
+            case "cheapest": {
+                queryLogic = "ORDER BY cars.price ASC";
+                break;
+            }
+            case "expensive": {
+                queryLogic = "ORDER BY cars.price DESC";
                 break;
             }
             case "all": {
@@ -73,18 +80,49 @@ export class GetCars extends Controller {
                 queryLogic = "";
                 break;
             }
+            case "recent": {
+                // Parse the authorization header query
+                const { userId, token } = new QueryParser(request.headers.authorization || "");
+                const tokenInfo = await Authorize.getTokenInfo(userId, token);
+
+                if (tokenInfo) {
+                    queryLogic = "WHERE ";
+                    params.push(
+                        request.params.uuid && 
+                        Authorize.isAuthorized(tokenInfo.perm_level, apiSettings.rent_history_permission) ?
+                        request.params.uuid :
+                        userId
+                    );
+                } else {
+
+                }
+
+                if (!tokenInfo) {
+
+                } else if (request.params.uuid && Authorize.isAuthorized(tokenInfo.perm_level, apiSettings.rent_history_permission)) {
+                    queryLogic = "";
+                    params.push(request.params.uuid);
+                } else {
+                    queryLogic = "";
+                    params.push(userId);
+                }
+
+                break;
+            }
         }
 
         if (queryLogic) {
-            Query.create<Car>(`SELECT cars.* FROM cars ${queryLogic}`).then((cars) => this.respond<CarResponse[]>(response, Status.OK, cars.rows.map((car) => ({
-                uuid: car.uuid,
-                license: car.license,
-                brand: car.brand,
-                model: car.model,
-                price: Number(car.uuid),
-                image: car.image,
-                description: car.description
-            })))).catch(() => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS));
+            Query.create<Car>(`SELECT cars.* FROM cars ${queryLogic}`, params).then(
+                (cars) => this.respond<CarResponse[]>(response, Status.OK, cars.rows.map((car) => ({
+                    uuid: car.uuid,
+                    license: car.license,
+                    brand: car.brand,
+                    model: car.model,
+                    price: Number(car.uuid),
+                    image: car.image,
+                    description: car.description
+                })))
+            ).catch(() => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS));
         } else {
             // Not a valid info type so throw a conflict status
         this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
