@@ -1,0 +1,26 @@
+.image-selection {
+    width: 100vw;
+    margin: 30px auto;
+    text-align: center;
+    position: relative;
+}
+
+.image-selection img {
+    width: 20vw;
+    height: calc(20vw / 16 * 9);
+    height: auto;
+    user-select: none;
+    position: absolute;
+    object-fit: cover;
+}
+
+.image-selection .navigation-button {
+    position: absolute;
+    top: calc(20vw / 16 * 9 / 2 - 17px);
+    right: calc(35vw - 25px);
+}
+
+.image-selection .navigation-button.left {
+    left: calc(35vw - 25px);
+    right: 0;
+}

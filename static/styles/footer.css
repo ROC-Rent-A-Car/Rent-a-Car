@@ -1,0 +1,15 @@
+.footer {
+    display: flex;
+    justify-content: center;
+    width: 100vw;
+    height: 45px;
+    border-top: 1px solid var(--accent);
+    line-height: 45px;
+    font-size: 21px;
+    margin-top: auto;
+}
+
+.footer p {
+    display: inline-block;
+    margin: 0 3vw;
+}

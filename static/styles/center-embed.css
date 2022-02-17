@@ -1,0 +1,60 @@
+.center-embed {
+    width: 40vw;
+    height: auto;
+    padding: 20px;
+    border: 2px solid var(--accent);
+    border-radius: 10px;
+    margin: auto;
+    z-index: 1;
+    background-color: white;
+}
+
+.center-embed h1 {
+    text-align: center;
+}
+
+.center-embed label {
+    font-size: 18px;
+}
+
+.center-embed input {
+    width: 100%;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--input);
+    font-size: 18px;
+    padding: 5px;
+}
+
+.center-embed input, .center-embed .checkbox {
+    margin-bottom: 16px;
+}
+
+.center-embed a {
+    color: var(--link);
+    cursor: pointer;
+    margin-bottom: 16px;
+}
+
+.center-embed input[type="checkbox"] {
+    width: auto;
+}
+
+.center-embed input[type="submit"] {
+    background-color: var(--confirm);
+    padding: 10px 0;
+}
+
+.center-embed input:focus {
+    outline: none;
+}
+
+.center-embed input:last-of-type {
+    margin-bottom: 0;
+}
+
+.center-embed .spaced {
+    display: flex;
+    justify-content: space-between;
+    flex-flow: row wrap;
+}

@@ -1,9 +1,14 @@
 @import url("navigation.css");
+@import url("footer.css");
+@import url("center-embed.css");
 
 :root {
     --text: #2E3338;
     --background: white;
     --accent: #747F8D;
+    --input: #EEE;
+    --link: #4899EA;
+    --confirm: #75D6A7;
 }
 
 *, *::before, *::after {
@@ -16,4 +21,39 @@
 body {
     background-color: var(--background);
     font-size: 16px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+h1 {
+    margin-bottom: 10px;
+}
+
+.cover-image {
+    position: fixed;
+    top: 50px;
+    bottom: 45px;
+    right: 0;
+    width: 100%;
+    background-image: url("../resources/placeholder.png");
+    background-size: cover;
+}
+
+.cover-page {
+    position: fixed;
+    top: 50px;
+    width: 100vw;
+    height: calc(100vh - 95px);
+    transform: skew(-20deg);
+    margin-left: -50vw; /* Adding this to prevent overflow */
+    background-color: var(--background);
+    border-right: 1px solid var(--accent);
+}
+
+@media only screen and (max-height: 500px) {
+    .cover-page {
+        display: none;
+    }
 }

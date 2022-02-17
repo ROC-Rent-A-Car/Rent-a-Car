@@ -3,8 +3,8 @@
 /// <reference path="Cookie.js" />
 
 const token = Cookie.get("token");
-
 const nav = document.createElement("div");
+const footer = document.createElement("div");
 
 nav.classList.add("navigation");
 nav.innerHTML = [
@@ -17,7 +17,15 @@ nav.innerHTML = [
         ${page == "index" ? "Home" : page.charAt(0).toUpperCase() + page.slice(1)}
     </a>
 `).join("");
+
+footer.classList.add("footer")
+footer.innerHTML = `
+    <p>Telefoon: (036) 123 45 67</p>
+    <p>Adres: Almere Autopad 12</p>
+`;
+
 document.body.insertBefore(nav, document.body.firstChild);
+document.body.append(footer);
 
 if (sessionStorage.getItem("account") == "true") {
     replaceLogin();
