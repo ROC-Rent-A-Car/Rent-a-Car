@@ -18,22 +18,22 @@
     <div class="center-embed">
         <h1>Registreer</h1>
         <form>
-            <label for="username">Gebruikersnaam</label><br>
-            <input name="username" type="text"><br>
-            <label for="password">Wachtwoord</label><br>
-            <input name="password" type="password"><br>
-            <label for="ver-password">Verifieer wachtwoord</label><br>
-            <input name="ver-password" type="password"><br>
-            <label for="email">Email</label><br>
-            <input name="email" type="email"><br>
-            <label for="number">Telefoon nummer</label><br>
-            <input name="number" type="text"><br>
-            <label for="postal">Postcode</label><br>
-            <input name="postal" type="text">
-            <div class="checkbox">
-                <input name="remember" type="checkbox">
-                <label for="remember">Ik accepteer de <a>Terms of Use</a> & <a>Privacy Policy</a></label>
-            </div>
+            <label for="username">Gebruikersnaam</label>
+            <input name="username" type="text" required>
+            <label for="password">Wachtwoord</label>
+            <input name="password" type="password" required>
+            <label for="ver-password">Verifieer wachtwoord</label>
+            <input name="ver-password" type="password" required>
+            <label for="email">Email</label>
+            <input name="email" type="email" required>
+            <label for="number">Telefoon nummer</label>
+            <input name="number" type="text" required>
+            <label for="postal">Postcode</label>
+            <input name="postal" type="text" required>
+            <label class="checkbox" for="remember">
+                <input name="remember" type="checkbox" required>
+                Ik accepteer de <a>Terms of Use</a> & <a>Privacy Policy</a>
+            </label>
             <input type="submit" value="Registreer">
         </form>
     </div>

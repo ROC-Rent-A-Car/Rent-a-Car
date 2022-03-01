@@ -31,29 +31,56 @@ h1 {
     margin-bottom: 10px;
 }
 
+h1, h2, h3, h4, h5, p, b, i {
+    cursor: default;
+}
+
+input[type="submit"] {
+    cursor: pointer;
+    background-color: var(--confirm);
+    padding: 10px 0;
+}
+
+input, label {
+    display: block;
+}
+
+.checkbox input, .checkbox label {
+    display: inline-block;
+}
+
 .cover-image {
     position: fixed;
-    top: 50px;
-    bottom: 45px;
-    right: 0;
+    height: 100vh;
     width: 100%;
     background-image: url("../resources/placeholder.png");
     background-size: cover;
+    z-index: -2;
 }
 
 .cover-page {
     position: fixed;
-    top: 50px;
+    height: 100vh;
     width: 100vw;
-    height: calc(100vh - 95px);
     transform: skew(-20deg);
     margin-left: -50vw; /* Adding this to prevent overflow */
     background-color: var(--background);
     border-right: 1px solid var(--accent);
+    z-index: -1;
 }
 
 @media only screen and (max-height: 500px) {
     .cover-page {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 700px) {
+    .cover-page {
+        display: none;
+    }
+
+    .cover-image {
         display: none;
     }
 }

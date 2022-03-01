@@ -6,7 +6,8 @@
     border-top: 1px solid var(--accent);
     line-height: 45px;
     font-size: 21px;
-    margin-top: auto;
+    margin: auto 0 0;
+    background-color: var(--background);
 }
 
 .footer p {

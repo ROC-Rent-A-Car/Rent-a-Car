@@ -18,18 +18,19 @@
     <div class="center-embed">
         <h1>Login</h1>
         <form>
-            <label for="username">Gebruikersnaam</label><br>
-            <input name="username" type="text"><br>
-            <label for="password">Wachtwoord</label><br>
-            <input name="password" type="password">
+            <label for="username">Gebruikersnaam</label>
+            <input name="username" type="text" required>
+            <label for="password">Wachtwoord</label>
+            <input name="password" type="password" required>
             <div class="spaced">
-                <div class="checkbox">
+                <label class="checkbox" for="remember">
                     <input name="remember" type="checkbox">
-                    <label for="remember">Herinner mij</label>
-                </div>
+                    Herinner mij
+                </label>
                 <a>Wachtwoord vergeten</a>
             </div>
             <input type="submit" value="Login">
+            <p>Nog geen account? <a href="register.html">Registreer</a></p>
         </form>
     </div>
 </body>
