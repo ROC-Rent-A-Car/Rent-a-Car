@@ -1,3 +1,29 @@
+.cover-image {
+    position: fixed;
+    height: 100vh;
+    width: 100%;
+    background-image: url("../resources/placeholder.png");
+    background-size: cover;
+    z-index: -2;
+}
+
+.cover-page {
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    transform: skew(-20deg);
+    margin-left: -50vw; /* Adding this to prevent overflow */
+    background-color: var(--background);
+    border-right: 1px solid var(--accent);
+    z-index: -1;
+}
+
+.cover-embed {
+    height: auto;
+    margin: auto 0 auto 25vw;
+    transform: translate(-25%, 50%);
+}
+
 .center-embed {
     width: 70vw;
     height: auto;
@@ -63,7 +89,35 @@
     flex-flow: row wrap;
 }
 
+@media only screen and (max-height: 500px) {
+    .cover-page {
+        display: none;
+    }
+
+    .cover-embed {
+        margin: auto;
+        transform: none;
+        border: 2px solid var(--accent);
+        border-radius: 10px;
+        padding: 20px;
+        background-color: var(--background);
+    }
+}
+
 @media only screen and (max-width: 700px) {
+    .cover-page {
+        display: none;
+    }
+
+    .cover-image {
+        display: none;
+    }
+
+    .cover-embed {
+        margin: auto;
+        transform: none;
+    }
+
     .center-embed {
         border: none;
         border-radius: 0;

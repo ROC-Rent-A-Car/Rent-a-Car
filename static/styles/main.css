@@ -1,6 +1,6 @@
 @import url("navigation.css");
 @import url("footer.css");
-@import url("center-embed.css");
+@import url("cover.css");
 
 :root {
     --text: #2E3338;
@@ -47,40 +47,4 @@ input, label {
 
 .checkbox input, .checkbox label {
     display: inline-block;
-}
-
-.cover-image {
-    position: fixed;
-    height: 100vh;
-    width: 100%;
-    background-image: url("../resources/placeholder.png");
-    background-size: cover;
-    z-index: -2;
-}
-
-.cover-page {
-    position: fixed;
-    height: 100vh;
-    width: 100vw;
-    transform: skew(-20deg);
-    margin-left: -50vw; /* Adding this to prevent overflow */
-    background-color: var(--background);
-    border-right: 1px solid var(--accent);
-    z-index: -1;
-}
-
-@media only screen and (max-height: 500px) {
-    .cover-page {
-        display: none;
-    }
-}
-
-@media only screen and (max-width: 700px) {
-    .cover-page {
-        display: none;
-    }
-
-    .cover-image {
-        display: none;
-    }
 }
