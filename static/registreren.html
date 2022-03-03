@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Registreren</title>
     <link href="styles/main.css" rel="stylesheet">
     <script defer src="scripts/Cookie.js"></script>
     <script defer src="scripts/main.js"></script>
-    <script defer src="scripts/login.js"></script>
+    <script defer src="scripts/register.js"></script>
     <link href="https://nealvos.s3.eu-west-2.amazonaws.com/fontawesome/web/fontawesome-pro-5.9.0-web/css/all.css" rel="stylesheet">
     <script src="https://nealvos.s3.eu-west-2.amazonaws.com/fontawesome/web/fontawesome-pro-5.9.0-web/js/all.js"></script>
 </head>
@@ -16,21 +16,25 @@
     <span class="cover-image"></span>
     <span class="cover-page"></span>
     <div class="center-embed">
-        <h1>Login</h1>
+        <h1>Registreren</h1>
         <form>
             <label for="username">Gebruikersnaam</label>
             <input name="username" type="text" required>
             <label for="password">Wachtwoord</label>
             <input name="password" type="password" required>
-            <div class="spaced">
-                <label class="checkbox" for="remember">
-                    <input name="remember" type="checkbox">
-                    Herinner mij
-                </label>
-                <a>Wachtwoord vergeten</a>
-            </div>
-            <input type="submit" value="Login">
-            <p>Nog geen account? <a href="register.html">Registreer</a></p>
+            <label for="ver-password">Verifieer wachtwoord</label>
+            <input name="ver-password" type="password" required>
+            <label for="email">Email</label>
+            <input name="email" type="email" required>
+            <label for="number">Telefoon nummer</label>
+            <input name="number" type="text" required>
+            <label for="postal">Postcode</label>
+            <input name="postal" type="text" required>
+            <label class="checkbox" for="remember">
+                <input name="remember" type="checkbox" required>
+                Ik accepteer de <a>Terms of Use</a> & <a>Privacy Policy</a>
+            </label>
+            <input type="submit" value="Registreer">
         </form>
     </div>
 </body>

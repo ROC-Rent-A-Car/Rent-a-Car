@@ -11,9 +11,9 @@ nav.innerHTML = [
     "contact",
     "index",
     "huren",
-    "login"
+    "inloggen"
 ].map((page) => `
-    <a ${page == "login" ? "id=\"account\"" : ""} href="${page}.html">
+    <a ${page == "inloggen" ? "id=\"account\"" : ""} href="/${page}.html">
         ${page == "index" ? "Home" : page.charAt(0).toUpperCase() + page.slice(1)}
     </a>
 `).join("");
