@@ -46,3 +46,18 @@ BetterArray.from(readdirSync(controllers))
     .then(() => 
         // Starting the web app
         APP.listen(web.port, web.host, () => DevConsole.info("Listening to \x1b[34m%s:%s\x1b[0m", web.host, web.port.toString())));
+
+APP.use((req, res) => {
+    res.status(404);
+
+    if (req.accepts("html")) {
+        res.redirect("/errors/404.html");
+    } else if (req.accepts("text/plain")) {
+        res.send("Not found");
+    } else {
+        res.json({
+            status: 404,
+            message: "Not found"
+        });
+    }
+});

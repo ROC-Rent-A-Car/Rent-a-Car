@@ -20,7 +20,8 @@
 
 .cover-embed {
     height: auto;
-    margin: auto 0 auto 25vw;
+    width: 40vw;
+    margin: auto 0 auto calc(10vw + 20px);
     transform: translate(-25%, 50%);
 }
 
@@ -95,6 +96,7 @@
     }
 
     .cover-embed {
+        width: auto;
         margin: auto;
         transform: none;
         border: 2px solid var(--accent);
