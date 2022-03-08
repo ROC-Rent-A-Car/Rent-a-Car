@@ -1,5 +1,4 @@
 import { JSONPrimitive, Status } from "std-node";
-import { SETTINGS } from "..";
 import { Conflict } from "../enums/Conflict";
 import { RequestMethod } from "../enums/RequestMethod";
 import { CarResponse } from "../interfaces/responses/CarResponse";
@@ -7,9 +6,7 @@ import { Car } from "../interfaces/tables/Car";
 import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
 import { response } from "../types/response";
-import { Authorize } from "../utils/Authorize";
 import { Query } from "../utils/Query";
-import { QueryParser } from "../utils/QueryParser";
 
 /**
  * A car getter API controller which fetches all the cars which apply to a specified filter
@@ -35,7 +32,6 @@ export class GetCars extends Controller {
     }
 
     protected async request(request: request, response: response): Promise<void> {
-        const apiSettings = SETTINGS.get("api");
         const params: JSONPrimitive[] = [];
         let queryLogic: string | undefined;
 
@@ -80,35 +76,6 @@ export class GetCars extends Controller {
                 queryLogic = "";
                 break;
             }
-            case "recent": {
-                // Parse the authorization header query
-                const { userId, token } = new QueryParser(request.headers.authorization || "");
-                const tokenInfo = await Authorize.getTokenInfo(userId, token);
-
-                if (tokenInfo) {
-                    queryLogic = "WHERE ";
-                    params.push(
-                        request.params.uuid && 
-                        Authorize.isAuthorized(tokenInfo.perm_level, apiSettings.rent_history_permission) ?
-                        request.params.uuid :
-                        userId
-                    );
-                } else {
-
-                }
-
-                if (!tokenInfo) {
-
-                } else if (request.params.uuid && Authorize.isAuthorized(tokenInfo.perm_level, apiSettings.rent_history_permission)) {
-                    queryLogic = "";
-                    params.push(request.params.uuid);
-                } else {
-                    queryLogic = "";
-                    params.push(userId);
-                }
-
-                break;
-            }
         }
 
         if (queryLogic) {
@@ -125,7 +92,7 @@ export class GetCars extends Controller {
             ).catch(() => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS));
         } else {
             // Not a valid info type so throw a conflict status
-        this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
+            this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
         }
     }
 }

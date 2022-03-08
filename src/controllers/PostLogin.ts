@@ -13,14 +13,10 @@ import { Username } from "../utils/Username";
 /**
  * A login API controller which returns the user entry
  * 
- * **URL:** `api/v{version}/login/:userId`  
+ * **URL:** `api/v{version}/login`  
  * **Request method:** `POST`  
  * **Returns:** `User`  
  * **Authorized:** `false`  
- * 
- * **URL fields:**
- * 
- * - `userId`: The user ID
  * 
  * **Form body:**
  * 
@@ -30,7 +26,7 @@ import { Username } from "../utils/Username";
 export class PostLogin extends Controller {
 
     constructor() {
-        super("/login/:userId", RequestMethod.POST);
+        super("/login", RequestMethod.POST);
     }
 
     protected async request(request: request, response: response): Promise<void> {
@@ -38,17 +34,15 @@ export class PostLogin extends Controller {
         const password = new Password(request.body.password);
 
         // Validate the fields
-        if (username.validate() && password.validate() && request.params.userId) {
+        if (username.validate() && password.validate()) {
             // Find a user which has the provided credentials
             Query.create<User>(`
                 SELECT * 
                 FROM users 
                 WHERE 
-                    uuid = $1 AND 
-                    username = $2 AND 
-                    password_hash = $3
+                    username = $1 AND 
+                    password_hash = $2
             `, [
-                request.params.userId,
                 username.transform(),
                 password.transform()
             ]).then(({ rows: [ user ], rowCount }) => {
