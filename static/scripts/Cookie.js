@@ -7,11 +7,11 @@ class Cookie {
      * @static
      * @param {string} name 
      * @param {JSONPrimitive} value 
-     * @param {number} expirationDays
+     * @param {number} expirationTimestamp
      * @returns {void} 
      */
-    static set(name, value, expirationDays) {
-        document.cookie = `${name}=${value};expires=${new Date(Date.now() + expirationDays * 864e5).toUTCString()}path=/`;
+    static set(name, value, expirationTimestamp) {
+        document.cookie = `${name}=${value};expires=${new Date(expirationTimestamp).toUTCString()}path=/`;
     }
 
     /**

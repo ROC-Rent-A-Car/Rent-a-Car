@@ -62,6 +62,10 @@
     text-align: center;
 }
 
+.center-embed label {
+    text-align: left;
+}
+
 .center-embed a {
     color: var(--link);
     margin-bottom: 16px;
