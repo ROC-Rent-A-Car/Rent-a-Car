@@ -41,23 +41,26 @@ APP.use(json({
 APP.use(express.static(join(__dirname, "../static")));
 
 // Iterating over all the controllers to establish them as API endpoints
-BetterArray.from(readdirSync(controllers))
-    .asyncMap(async (endpoint) => new (await import(join(controllers, endpoint)))[endpoint.split(".")[0]]())
-    .then(() => 
-        // Starting the web app
-        APP.listen(web.port, web.host, () => DevConsole.info("Listening to \x1b[34m%s:%s\x1b[0m", web.host, web.port.toString())));
+BetterArray.from(readdirSync(controllers)).asyncMap(
+    async (endpoint) => new (await import(join(controllers, endpoint)))[endpoint.split(".")[0]]()
+).then(() => {
+    APP.use((req, res) => {
+        res.status(404);
 
-APP.use((req, res) => {
-    res.status(404);
+        if (req.accepts("html")) {
+            res.redirect("/errors/404.html");
+        } else if (req.accepts("text/plain")) {
+            res.send("Not found");
+        } else if (req.accepts("image")) {
+            res.redirect("/resources/placeholder.png");
+        } else {
+            res.json({
+                status: 404,
+                message: "Not found"
+            });
+        }
+    });
 
-    if (req.accepts("html")) {
-        res.redirect("/errors/404.html");
-    } else if (req.accepts("text/plain")) {
-        res.send("Not found");
-    } else {
-        res.json({
-            status: 404,
-            message: "Not found"
-        });
-    }
+    // Starting the web app
+    APP.listen(web.port, web.host, () => DevConsole.info("Listening to \x1b[34m%s:%s\x1b[0m", web.host, web.port.toString()));
 });
