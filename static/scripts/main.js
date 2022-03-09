@@ -3,7 +3,7 @@
 /// <reference path="Cookie.js" />
 /// <reference path="APIRequest.js" />
 
-const authorization = Cookie.get("authorization");
+const user = Cookie.get("user");
 const nav = document.createElement("div");
 const footer = document.createElement("div");
 
@@ -30,12 +30,14 @@ document.body.append(footer);
 
 if (sessionStorage.getItem("account") == "true") {
     replaceLogin();
-} else if (authorization) {
+} else if (user) {
+    const userObject = JSON.parse(user);
+
     APIRequest.request(
         "/api/v1/authorize", 
         "POST", 
         {}, 
-        constructQuery(JSON.parse(authorization))
+        constructAuthorization(userObject)
     ).then(async (response) => {
         /**
          * @type {APIResponse<TokenInfo>}
@@ -44,7 +46,11 @@ if (sessionStorage.getItem("account") == "true") {
 
         if (status == 200 && typeof message != "string") {
             replaceLogin();
-            Cookie.set("token", message.token, message.tokenExpiration);
+
+            Cookie.set("user", {
+                ...userObject,
+                ...message
+            }, message.tokenExpiration);
             sessionStorage.setItem("account", "true");
         } else {
             logout();
@@ -63,7 +69,7 @@ if (sessionStorage.getItem("account") == "true") {
  * @returns {void}
  */
 function logout() {
-    Cookie.delete("token");
+    Cookie.delete("user");
     sessionStorage.setItem("account", "false");
 }
 
@@ -87,4 +93,15 @@ function replaceLogin() {
  */
 function constructQuery(object) {
     return Object.entries(object).map(([ key, value ]) => `${key}=${value}`).join("&");
+}
+
+/**
+ * @param {User} user
+ * @returns {string}
+ */
+function constructAuthorization({ uuid, token } = JSON.parse(Cookie.get("user"))) {
+    return constructQuery({
+        userId: uuid,
+        token
+    });
 }

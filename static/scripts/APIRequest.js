@@ -11,7 +11,7 @@ class APIRequest {
      * @returns {Promise<Response>}
      */
     static async request(path, method, headers = {}, body = undefined) {
-        return fetch(new Request(path, {
+        return fetch(new Request("/api/v1/" + path, {
             method,
             body,
             headers: {

@@ -10,20 +10,15 @@ APIRequest.request("/api/v1/cars/available", "GET").then(async (cars) => {
      const { status, message } = await cars.json();
 
      if (status == 200 && typeof message != "string") {
-        const authorization = Cookie.get("authorization");
         const user = Cookie.get("user");
 
-        if (sessionStorage.getItem("account") == "true" && authorization && user) {
-            const { token } = JSON.parse(authorization);
-            const { uuid } = JSON.parse(user);
+        if (sessionStorage.getItem("account") == "true" && user) {
+            const userObject = JSON.parse(user);
 
             drawSelection(1, "to-hire", message);
 
-            APIRequest.request(`/api/v1/items/user/${uuid}`, "GET", {
-                authorization: constructQuery({
-                    uuid,
-                    token
-                })
+            APIRequest.request(`/api/v1/items/user/${userObject.uuid}`, "GET", {
+                authorization: constructAuthorization(userObject)
             }).then(async (items) => {
                 /**
                  * @type {APIResponse<RentItem[]>}

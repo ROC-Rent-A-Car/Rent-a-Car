@@ -12,3 +12,4 @@ interface APIResponse<T> {
 }
 
 declare function constructQuery(object: DynamicObject<string>): string;
+declare function constructAuthorization(object?: User): string;

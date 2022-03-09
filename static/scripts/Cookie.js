@@ -17,7 +17,7 @@ class Cookie {
     /**
      * @static
      * @param {string} name
-     * @returns {string|void}
+     * @returns {string|undefined}
      */
     static get(name) {
         const cookies = decodeURIComponent(document.cookie).split(/\s*;\s*/);
