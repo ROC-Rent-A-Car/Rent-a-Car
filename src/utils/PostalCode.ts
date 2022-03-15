@@ -7,6 +7,6 @@ export class PostalCode extends Type {
     }
 
     public validate(): boolean {
-        return this.value != undefined && /\d{4}[A-Z]{2}/.test(this.value);
+        return this.value != undefined && /^[1-9]\d{3}[A-Z]{2}$/.test(this.value);
     }
 }

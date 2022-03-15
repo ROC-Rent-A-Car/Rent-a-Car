@@ -21,7 +21,6 @@ export class Password extends Type {
         return this.value != undefined &&
             this.value.length >= 8 &&
             this.value.length <= 64 &&
-            this.value.match(/\d+/) != null &&
-            this.value.match(/[^\w]+|_/) != null;
+            /[^a-zA-Z\d].*?\d|\d.*?[^a-zA-Z\d]/.test(this.value);
     }
 }

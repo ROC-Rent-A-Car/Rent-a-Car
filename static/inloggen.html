@@ -20,9 +20,9 @@
         <h1>Inloggen</h1>
         <form id="form">
             <label for="username">Gebruikersnaam</label>
-            <input name="username" type="text" required>
+            <input name="username" type="text" minlength="6" maxlength="64" required>
             <label for="password">Wachtwoord</label>
-            <input name="password" type="password" required>
+            <input name="password" type="password" minlength="8" maxlength="64" pattern="^.*?(?:[^a-zA-Z\d].*?\d|\d.*?[^a-zA-Z\d]).*?$" required>
             <div class="spaced">
                 <label class="checkbox" for="remember">
                     <input name="remember" type="checkbox">
@@ -31,6 +31,7 @@
                 <a>Wachtwoord vergeten</a>
             </div>
             <input type="submit" value="Login">
+            <p id="message">aaa</p>
             <p>Nog geen account? <a href="registreren.html">Registreer</a></p>
         </form>
     </div>
