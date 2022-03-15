@@ -6,6 +6,17 @@
     height: calc(20vw / 16 * 9);
 }
 
+.image-selection.spaced {
+    height: auto;
+}
+
+.image-selection.spaced img {
+    position: unset;
+    margin: 10px;
+    width: calc(22vw - 20px);
+    height: calc((22vw - 20px) / 16 * 9);
+}
+
 .image-selection img {
     width: 20vw;
     height: calc(20vw / 16 * 9);
@@ -16,11 +27,42 @@
 
 .image-selection .navigation-button {
     position: absolute;
-    top: calc(20vw / 16 * 9 / 2 - 17px);
+    top: calc(20vw / 16 * 9 / 2 - 30px);
     right: calc(35vw - 25px);
+    display: block;
+    text-align: center;
+    line-height: 50px;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    background-color: #60B8E9;
+    z-index: 100;
+    font-size: 30px;
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+.navigation-button:hover {
+    background-color: #66A3C5;
+}
+
+.navigation-button::after {
+    content: "➤";
+    color: var(--background);
 }
 
 .image-selection .navigation-button.left {
     left: calc(35vw - 25px);
     right: 0;
+    transform: rotate(180deg);
+}
+
+.image-selection .more {
+    width: 60vw;
+    margin: auto 0;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--accent);
+    background-color: var(--input);
+    cursor: pointer;
 }

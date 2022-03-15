@@ -58,7 +58,6 @@
 }
 
 .center-embed p {
-    width: 100%;
     text-align: center;
 }
 
@@ -92,6 +91,11 @@
     display: flex;
     justify-content: space-between;
     flex-flow: row wrap;
+}
+
+.center-embed #message {
+    text-align: center;
+    color: red;
 }
 
 @media only screen and (max-height: 500px) {

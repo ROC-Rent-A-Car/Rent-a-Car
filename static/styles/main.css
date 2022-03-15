@@ -49,3 +49,7 @@ input, label {
 .checkbox input, .checkbox label {
     display: inline-block;
 }
+
+.section {
+    padding: 10px 0;
+}
