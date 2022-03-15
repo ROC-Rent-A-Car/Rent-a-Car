@@ -3,7 +3,7 @@
 /// <reference path="Cookie.js" />
 /// <reference path="APIRequest.js" />
 
-APIRequest.request("/api/v1/cars/available", "GET").then(async (cars) => {
+APIRequest.request("/cars/available", "GET").then(async (cars) => {
     /**
      * @type {APIResponse<Car[]>}
      */
@@ -17,7 +17,7 @@ APIRequest.request("/api/v1/cars/available", "GET").then(async (cars) => {
 
             drawSelection(1, "to-hire", message);
 
-            APIRequest.request(`/api/v1/items/user/${userObject.uuid}`, "GET", {
+            APIRequest.request(`/items/user/${userObject.uuid}`, "GET", {
                 authorization: constructAuthorization(userObject)
             }).then(async (items) => {
                 /**
@@ -33,7 +33,7 @@ APIRequest.request("/api/v1/cars/available", "GET").then(async (cars) => {
             }).catch(console.error);
         } else {
             document.getElementById("recent").remove();
-            drawSelection(3, "to-hire", message);
+            drawSelection(2, "to-hire", message);
         }
     } else {
         throw message;

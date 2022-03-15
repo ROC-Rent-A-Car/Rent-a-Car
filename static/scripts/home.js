@@ -2,7 +2,7 @@
 /// <reference path="index.d.ts" />
 /// <reference path="APIRequest.js" />
 
-APIRequest.request("/api/v1/cars/top", "GET").then(async (response) => {
+APIRequest.request("/cars/top", "GET").then(async (response) => {
     /**
      * @type {APIResponse<Car[]>}
      */

@@ -33,7 +33,7 @@ if (sessionStorage.getItem("account") == "true") {
 } else if (user) {
     const userObject = JSON.parse(user);
 
-    APIRequest.request("/api/v1/authorize", "GET", {
+    APIRequest.request("/authorize", "GET", {
         authorization: constructAuthorization(userObject)
     }).then(async (response) => {
         /**

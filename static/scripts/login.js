@@ -3,16 +3,24 @@
 /// <reference path="Cookie.js" />
 /// <reference path="APIRequest.js" />
 
+// @ts-ignore For some reason js decided that having the same variable in 2 unrelated files is an error
+let resetEvent;
+
 document.getElementById("form").addEventListener("submit", (event) => {
     event.preventDefault();
+    
+    if (resetEvent) {
+        document.getElementById("message").innerText = "";
+        clearTimeout(resetEvent);
+    }
 
     /**
      * @type {DynamicObject<string>}
      */
     // @ts-ignore TS really had a stroke here
-    const { username, password, remember } = Object.fromEntries([...new FormData(event.target)])
+    const { username, password, remember } = Object.fromEntries([...new FormData(event.target)]);
 
-    APIRequest.request("login", "POST", {}, constructQuery({
+    APIRequest.request("/login", "POST", {}, constructQuery({
         username,
         password
     })).then(async (response) => {
@@ -28,6 +36,11 @@ document.getElementById("form").addEventListener("submit", (event) => {
                 Cookie.set("user", JSON.stringify(message), message.tokenExpiration);
             }
         } else {
+            const messageNode = document.getElementById("message");
+
+            messageNode.innerText = JSON.stringify(message);
+            resetEvent = setTimeout(() => messageNode.innerText = "", 3e3);
+
             throw message;
         }
     }).catch(console.error);
