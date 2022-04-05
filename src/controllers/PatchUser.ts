@@ -19,7 +19,7 @@ import { QueryParser } from "../utils/QueryParser";
  * 
  * **URL:** `api/v{version}/user/:overwriteId?`  
  * **Request method:** `Patch`  
- * **Returns:** `User`  
+ * **Returns:** `void`  
  * **Authorized:** `true`  
  * 
  * **URL fields:**
@@ -83,7 +83,11 @@ export class PatchUser extends Controller {
                         email: email?.transform(),
                         phone: phone?.transform(),
                         postal_code: postal?.transform()
-                    }, "users", userId);
+                    }, "users", userId).then(
+                        () => this.respond(response, Status.ACCEPTED)
+                    ).catch(
+                        () => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS)
+                    );
                 } else {
                     // If one fails just assume the request is invalid
                     this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);

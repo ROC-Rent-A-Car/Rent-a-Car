@@ -42,10 +42,10 @@ export class PutUser extends Controller {
             username: new Username(request.body.username),
             password: new Password(request.body.password),
             email: new Email(request.body.email),
-            phoneNumber: new PhoneNumber(request.body.phone),
+            phoneNumber: new PhoneNumber(request.body.number),
             postalCode: new PostalCode(request.body.postal)
         };
-
+        
         // Checking if every field is valid
         if (Object.values(fields).every((field) => field.validate())) {
             // Transforming all fields

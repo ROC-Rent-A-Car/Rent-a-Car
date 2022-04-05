@@ -8,6 +8,6 @@ export interface UserResponse extends TableBase {
     postalCode: string,
     permLevel: PermLevel,
     renting: boolean,
-    token: string,
-    tokenExpiration: number
+    token?: string,
+    tokenExpiration?: number
 }

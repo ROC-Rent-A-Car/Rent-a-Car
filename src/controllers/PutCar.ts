@@ -12,7 +12,7 @@ import { Query } from "../utils/Query";
 import { QueryParser } from "../utils/QueryParser";
 
 /**
- * A register API controller which puts an user entry and returns the new user entry
+ * A register API controller which puts a car entry and returns the new car entry
  * 
  * **URL:** `api/v{version}/car`  
  * **Request method:** `PUT`  

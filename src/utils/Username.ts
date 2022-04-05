@@ -7,6 +7,6 @@ export class Username extends Type {
     }
 
     public validate(): boolean {
-        return this.value != undefined && this.value.length >= 6 && this.value.length <= 64;
+        return this.value != undefined && this.value.length >= 4 && this.value.length <= 64;
     }
 }

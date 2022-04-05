@@ -10,6 +10,6 @@ export class PhoneNumber extends Type {
      * @returns Checks if the phone number fits the global standard
      */
     public validate(): boolean {
-        return this.value != undefined && /^\+31[-\s]?[0-9]{3}[-\s]?[0-9]{4}$/.test(this.transform()!);
+        return this.value != undefined && /^\+31[-\s]?6[-\s]?\d{4}[-\s]?\d{4}$/.test(this.transform()!);
     }
 }
