@@ -10,9 +10,9 @@ APIRequest.request("/cars/available", "GET").then(async (cars) => {
      const { status, message } = await cars.json();
 
      if (status == 200 && typeof message != "string") {
-        const user = Cookie.get("user");
+        const user = Cookie.get("user") || sessionStorage.getItem("user");
 
-        if (sessionStorage.getItem("account") == "true" && user) {
+        if (user) {
             const userObject = JSON.parse(user);
             const available = message;
 

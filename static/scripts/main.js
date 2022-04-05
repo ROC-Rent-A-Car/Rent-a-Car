@@ -7,6 +7,7 @@ var user = Cookie.get("user");
 var nav = document.createElement("div");
 var footer = document.createElement("div");
 
+nav.id = "nav";
 nav.classList.add("navigation");
 nav.innerHTML = [
     "contact",
@@ -28,7 +29,7 @@ footer.innerHTML = `
 document.body.insertBefore(nav, document.body.firstChild);
 document.body.append(footer);
 
-if (sessionStorage.getItem("account") == "true") {
+if (sessionStorage.getItem("user")) {
     replaceLogin();
 } else if (user) {
     const userObject = JSON.parse(user);
@@ -42,13 +43,18 @@ if (sessionStorage.getItem("account") == "true") {
         const { status, message } = await response.json();
 
         if (status == 200 && typeof message != "string") {
-            replaceLogin();
-
-            Cookie.set("user", JSON.stringify({
+            const user = JSON.stringify({
                 ...userObject,
                 ...message
-            }), message.tokenExpiration);
-            sessionStorage.setItem("account", "true");
+            });
+
+            replaceLogin();
+
+            if (!sessionStorage.getItem("disable-cache")) {
+                Cookie.set("user", user, message.tokenExpiration);
+            }
+            
+            sessionStorage.setItem("user", user);
         } else {
             logout();
             
@@ -67,7 +73,7 @@ if (sessionStorage.getItem("account") == "true") {
  */
 function logout() {
     Cookie.delete("user");
-    sessionStorage.setItem("account", "false");
+    sessionStorage.removeItem("user");
 }
 
 /**
@@ -82,6 +88,8 @@ function replaceLogin() {
 
     account.href = "account.html";
     account.innerHTML = "Account <i class=\"fas fa-user-circle\"></i>";
+
+    
 }
 
 /**

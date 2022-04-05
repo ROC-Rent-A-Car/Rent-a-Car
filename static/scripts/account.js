@@ -4,10 +4,10 @@
 /// <reference path="APIRequest.js" />
 
 var resetEvent;
-var user = Cookie.get("user");
+var user = Cookie.get("user") || sessionStorage.getItem("user");
 var form = document.getElementById("form");
 
-if (sessionStorage.getItem("account") == "true" && user) {
+if (user) {
     const inputs = form.getElementsByTagName("input");
     const userObject = JSON.parse(user);
 
@@ -45,7 +45,13 @@ if (sessionStorage.getItem("account") == "true" && user) {
                 const { status, message } = await response.json();
 
                 if (status == 202 && typeof message != "string") {
-                    Cookie.set("user", JSON.stringify(Object.assign(userObject, newUserObject)), userObject.tokenExpiration);
+                    const newUser = JSON.stringify(Object.assign(userObject, newUserObject));
+
+                    sessionStorage.setItem("user", newUser);
+
+                    if (!sessionStorage.getItem("disable-cache")) {
+                        Cookie.set("user", newUser, userObject.tokenExpiration);
+                    }
                 } else {
                     const messageNode = document.getElementById("message");
 

@@ -29,10 +29,16 @@ document.getElementById("form").addEventListener("submit", (event) => {
         const { status, message } = await response.json();
 
         if (status == 200 && typeof message != "string") {
-            sessionStorage.setItem("account", "true");
+            const user = JSON.stringify(message);
+
+            sessionStorage.setItem("user", user);
 
             if (remember == "on") {
-                Cookie.set("user", JSON.stringify(message), message.tokenExpiration);
+                Cookie.set("user", user, message.tokenExpiration);
+            } else {
+                Cookie.delete("user");
+                sessionStorage.removeItem("user");
+                sessionStorage.setItem("disable-cache", "true");
             }
 
             window.location.href = "/account.html";

@@ -3,7 +3,7 @@
 /// <reference path="Cookie.js" />
 /// <reference path="APIRequest.js" />
 
-var user = Cookie.get("user");
+var user = Cookie.get("user") || sessionStorage.getItem("user");
 var { uuid, model, description, price, image } = Object.fromEntries([
     ...new URLSearchParams(window.location.search).entries()
 ].map(([ key, value ]) => [ key, window.atob(value.replace(/_/g, "/").replace(/-/g, "+")) ]));

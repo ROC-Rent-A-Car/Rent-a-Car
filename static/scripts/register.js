@@ -35,8 +35,10 @@ document.getElementById("form").addEventListener("submit", (event) => {
             const messageNode = document.getElementById("message");
 
             if (status == 201 && typeof message != "string") {
-                sessionStorage.setItem("account", "true");
-                Cookie.set("user", JSON.stringify(message), message.tokenExpiration);
+                const user = JSON.stringify(message);
+
+                sessionStorage.setItem("user", user);
+                Cookie.set("user", user, message.tokenExpiration);
                 window.location.href = "/account.html";
             } else {
                 messageNode.innerText = JSON.stringify(message);
