@@ -10,11 +10,28 @@
     height: auto;
 }
 
-.image-selection.spaced img {
-    position: unset;
+.image-selection.spaced .cover {
+    position: relative;
+    display: inline-block;
     margin: 10px;
     width: calc(22vw - 20px);
     height: calc((22vw - 20px) / 16 * 9);
+    cursor: pointer;
+}
+
+.image-selection.spaced .cover img {
+    width: 100%;
+    height: 100%;
+    position: unset;
+}
+
+.image-selection.spaced .cover .banner {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    padding: 5px;
+    background: rgba(0, 0, 0, 0.2);
 }
 
 .image-selection img {
@@ -65,4 +82,11 @@
     border: 1px solid var(--accent);
     background-color: var(--input);
     cursor: pointer;
+}
+
+@media only screen and (max-width: 700px) {
+    .image-selection.spaced .cover {
+        width : calc(42vw - 20px);
+        height: calc((42vw - 20px) / 16 * 9);
+    }
 }

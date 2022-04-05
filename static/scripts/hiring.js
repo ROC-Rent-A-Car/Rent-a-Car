@@ -14,8 +14,7 @@ APIRequest.request("/cars/available", "GET").then(async (cars) => {
 
         if (sessionStorage.getItem("account") == "true" && user) {
             const userObject = JSON.parse(user);
-
-            drawSelection(1, "to-hire", message);
+            const available = message;
 
             APIRequest.request(`/items/user/${userObject.uuid}`, "GET", {
                 authorization: constructAuthorization(userObject)
@@ -26,7 +25,13 @@ APIRequest.request("/cars/available", "GET").then(async (cars) => {
                 const { status, message } = await items.json();
 
                 if (status == 200 && typeof message != "string") {
-                    drawSelection(1, "recent", message.map((item) => item.car));
+                    if (message.length == 0) {
+                        drawSelection(2, "to-hire", available);
+                        document.getElementById("recent").remove();
+                    } else {
+                        drawSelection(1, "to-hire", available);
+                        drawSelection(1, "recent", message.map((item) => item.car));
+                    }
                 } else {
                     throw message;
                 }
@@ -46,7 +51,7 @@ APIRequest.request("/cars/available", "GET").then(async (cars) => {
  * @param {Car[]} cars
  * @returns {void}
  */
-function drawSelection(initialAmount, section, cars) {
+function drawSelection(initialAmount, section, cars) {    
     const button = document.createElement("button");
     let offset = 0;
 
@@ -74,17 +79,34 @@ function drawSelection(initialAmount, section, cars) {
  */
 function drawRows(section, cars) {
     const images = document.getElementById(`${section}-images`);
+    const button = images.getElementsByTagName("button")[0];
 
     cars.forEach((car) => {
+        const container = document.createElement("div");
+        const banner = document.createElement("div");
         const image = document.createElement("img");
-        const button = images.getElementsByTagName("button")[0];
+        
+        container.classList.add("cover");
+        banner.innerHTML = `<b>${car.brand} - ${car.model}</b>`;
+        banner.classList.add("banner");
         image.src = `/resources/${car.image}`;
         image.alt = car.model;
 
+        container.appendChild(image);
+        container.appendChild(banner);
+        container.addEventListener("click", () => {
+            window.location.href = `/details.html?${constructQuery(Object.fromEntries(Object.entries(car).map(
+                ([ key, value ]) => [ 
+                    key,
+                    window.btoa(value).replace(/\//g, "_").replace(/\+/g, "-").replace(/=/g, "") 
+                ]
+            )))}`;
+        });
+
         if (button) {
-            images.insertBefore(image, button);
+            images.insertBefore(container, button);
         } else {
-            images.appendChild(image);
+            images.appendChild(container);
         }
     });
 }

@@ -18,7 +18,7 @@
     <span class="cover-page"></span>
     <div class="center-embed">
         <h1>Registreren</h1>
-        <form>
+        <form id="form">
             <label for="username">Gebruikersnaam</label>
             <input name="username" type="text" minlength="6" maxlength="64" required>
             <label for="password">Wachtwoord</label>
@@ -27,16 +27,17 @@
             <input name="verPassword" type="password" minlength="8" maxlength="64" pattern="^.*?(?:[^a-zA-Z\d].*?\d|\d.*?[^a-zA-Z\d]).*?$" required>
             <label for="email">Email</label>
             <input name="email" type="email" placeholder="example@gmail.com" required>
-            <label for="number">Telefoon nummer</label>
-            <input name="number" type="tel" pattern="^\+31[-\s]?[0-9]{3}[-\s]?[0-9]{4}$" placeholder="+31 123 4567" required>
-            <label for="postal">Postcode</label>
-            <input name="postal" type="text" pattern="^[1-9]\d{3}[A-Z]{2}$" placeholder="1000AA" required>
+            <label for="phone">Telefoon nummer</label>
+            <input name="phone" type="tel" pattern="^\+31[-\s]?6[-\s]?\d{4}[-\s]?\d{4}$" placeholder="+31 6 1234 5678" required>
+            <label for="postalCode">Postcode</label>
+            <input name="postalCode" type="text" pattern="^[1-9]\d{3}[A-Z]{2}$" placeholder="1000AA" required>
             <label class="checkbox" for="agree">
                 <input name="agree" type="checkbox" required>
                 Ik accepteer de <a>Terms of Use</a> & <a>Privacy Policy</a>
             </label>
             <input type="submit" value="Registreer">
         </form>
+        <p id="message"></p>
     </div>
 </body>
 </html>
