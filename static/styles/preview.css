@@ -1,0 +1,48 @@
+.preview {
+    text-align: left;
+    margin: auto;
+}
+
+.preview img {
+    width: 40vw;
+    vertical-align: middle;
+    display: inline-block;
+    margin: 20px;
+}
+
+.preview .info {
+    width: 40vw;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.preview .info input[type="submit"] {
+    width: 100%;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+}
+
+.preview .info .details * {
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: 10px;
+}
+
+@media only screen and (max-width: 700px) {
+    .preview {
+        width: 100vw
+    }
+
+    .preview img {
+        display: block;
+        margin: 0 auto;
+        width: 80vw;
+    }
+
+    .preview .info {
+        display: block;
+        margin: 10px auto 0 auto;
+        width: 80vw;
+    }
+}

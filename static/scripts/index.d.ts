@@ -1,5 +1,6 @@
 type JSONPrimitive = import("std-node").JSONPrimitive;
 type DynamicObject<T> = import("std-node").DynamicObject<T>;
+type TableBase = import("../../src/interfaces/tables/TableBase").TableBase;
 type Car = import("../../src/interfaces/responses/CarResponse").CarResponse;
 type RentItem = import("../../src/interfaces/responses/RentItemResponse").RentItemResponse;
 type Rent = import("../../src/interfaces/responses/RentResponse").RentResponse;
@@ -11,5 +12,5 @@ interface APIResponse<T> {
     message: string | T
 }
 
-declare function constructQuery(object: DynamicObject<string>): string;
+declare function constructQuery(object: DynamicObject<JSONPrimitive>): string;
 declare function constructAuthorization(object?: User): string;

@@ -3,9 +3,9 @@
 /// <reference path="Cookie.js" />
 /// <reference path="APIRequest.js" />
 
-const user = Cookie.get("user");
-const nav = document.createElement("div");
-const footer = document.createElement("div");
+var user = Cookie.get("user");
+var nav = document.createElement("div");
+var footer = document.createElement("div");
 
 nav.classList.add("navigation");
 nav.innerHTML = [
@@ -19,7 +19,7 @@ nav.innerHTML = [
     </a>
 `).join("");
 
-footer.classList.add("footer")
+footer.classList.add("footer");
 footer.innerHTML = `
     <p>Telefoon: (036) 123 45 67</p>
     <p>Adres: Almere Autopad 12</p>
@@ -44,10 +44,10 @@ if (sessionStorage.getItem("account") == "true") {
         if (status == 200 && typeof message != "string") {
             replaceLogin();
 
-            Cookie.set("user", {
+            Cookie.set("user", JSON.stringify({
                 ...userObject,
                 ...message
-            }, message.tokenExpiration);
+            }), message.tokenExpiration);
             sessionStorage.setItem("account", "true");
         } else {
             logout();
@@ -85,11 +85,14 @@ function replaceLogin() {
 }
 
 /**
- * @param {DynamicObject<string>} object 
+ * @param {DynamicObject<JSONPrimitive>} object 
  * @returns {string}
  */
 function constructQuery(object) {
-    return Object.entries(object).map(([ key, value ]) => `${key}=${value}`).join("&");
+    return Object.entries(object).filter(
+        // @ts-ignore It exists unless the value is null or undefined which should be filtered
+        ([ _, value ]) => value?.__proto__
+    ).map(([ key, value ]) => `${key}=${value}`).join("&");
 }
 
 /**
