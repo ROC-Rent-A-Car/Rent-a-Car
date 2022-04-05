@@ -85,7 +85,7 @@ export class GetCars extends Controller {
                     license: car.license,
                     brand: car.brand,
                     model: car.model,
-                    price: Number(car.uuid),
+                    price: Number(car.price),
                     image: car.image,
                     description: car.description
                 })))
