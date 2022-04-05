@@ -1,6 +1,6 @@
 {
   "name": "rent-a-car",
-  "version": "0.9.6",
+  "version": "0.9.7",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -11,7 +11,6 @@
   "author": "SMJS",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.19.1",
     "dotenv": "^15.0.0",
     "express": "^4.17.2",
     "pg": "^8.7.1",

@@ -3,7 +3,7 @@ import { Pool } from "pg";
 import express from "express";
 import { readdirSync, readFileSync } from "fs";
 import { BetterArray, DevConsole } from "std-node";
-import { json, urlencoded } from "body-parser";
+import { urlencoded } from "body-parser";
 import { Settings } from "./utils/Settings";
 import { config } from "dotenv";
 
@@ -33,7 +33,7 @@ APP.use(urlencoded({
     extended: true ,
     limit: `${web.max_packet_size}mb`
 }));
-APP.use(json({ 
+APP.use(express.json({
     limit: `${web.max_packet_size}mb`
 }));
 
