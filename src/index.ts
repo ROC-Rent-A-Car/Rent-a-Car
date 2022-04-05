@@ -2,10 +2,12 @@ import { join } from "path";
 import { Pool } from "pg";
 import express from "express";
 import { readdirSync, readFileSync } from "fs";
-import { BetterArray, DevConsole } from "std-node";
+import { BetterArray, DevConsole, Status } from "std-node";
 import { urlencoded } from "body-parser";
 import { Settings } from "./utils/Settings";
 import { config } from "dotenv";
+import { Authorize } from "./utils/Authorize";
+import { PermLevel } from "./enums/PermLevel";
 
 // Configuring the .env variables which serve as the private settings, these won't be committed to GitHub
 config();
@@ -37,6 +39,23 @@ APP.use(express.json({
     limit: `${web.max_packet_size}mb`
 }));
 
+// Setting a mandatory authorization for staff endpoints
+APP.use((request, response, next) => {
+    if (request.path.startsWith("/staff")) {
+        if (
+            request.body.uuid && 
+            request.body.token && 
+            Authorize.isAuthorized(request.body.uuid, request.body.token, PermLevel.EMPLOYEE)
+        ) {
+            next();
+        } else {
+            response.status(Status.NOT_FOUND).redirect("/errors/404.html");
+        }
+    } else {
+        next();
+    }
+});
+
 // Setting the static files
 APP.use(express.static(join(__dirname, "../static")));
 
@@ -44,18 +63,18 @@ APP.use(express.static(join(__dirname, "../static")));
 BetterArray.from(readdirSync(controllers)).asyncMap(
     async (endpoint) => new (await import(join(controllers, endpoint)))[endpoint.split(".")[0]]()
 ).then(() => {
-    APP.use((req, res) => {
-        res.status(404);
+    APP.use((request, response) => {
+        response.status(Status.NOT_FOUND);
 
-        if (req.accepts("html")) {
-            res.redirect("/errors/404.html");
-        } else if (req.accepts("text/plain")) {
-            res.send("Not found");
-        } else if (req.accepts("image")) {
-            res.redirect("/resources/placeholder.png");
+        if (request.accepts("html")) {
+            response.redirect("/errors/404.html");
+        } else if (request.accepts("text/plain")) {
+            response.send("Not found");
+        } else if (request.accepts("image")) {
+            response.redirect("/resources/placeholder.png");
         } else {
-            res.json({
-                status: 404,
+            response.json({
+                status: Status.NOT_FOUND,
                 message: "Not found"
             });
         }
