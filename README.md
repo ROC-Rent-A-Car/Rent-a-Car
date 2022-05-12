@@ -22,6 +22,7 @@ The settings are expected to be specified in the `settings.json` file on the pro
 | token_refresh_margin           | `number`    | `api`  | Adds margin to auto-refresh the token before its expiration upon activity      |
 | max_pending                    | `number`    | `api`  | The number of days before a pending rent entry is considered invalid           |
 | change_perm_level_permission   | `PermLevel` | `api`  | The permission level required to edit the permission level of a user entry     |
+| user_view_permission           | `PermLevel` | `api`  | The permission level required to view all users                                |
 | car_creation_permission        | `PermLevel` | `api`  | The permission level required to create car entries                            |
 | car_edit_permission            | `PermLevel` | `api`  | The permission level required to edit car entries                              |
 | setup_status_toggle_permission | `PermLevel` | `api`  | The permission level required to toggle the car setup status                   |

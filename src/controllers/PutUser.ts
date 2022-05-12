@@ -95,7 +95,6 @@ export class PutUser extends Controller {
                         phone: user.phone,
                         postalCode: user.postal_code,
                         permLevel: user.perm_level,
-                        renting: user.renting,
                         token: user.token,
                         tokenExpiration: new Date(user.token_expiration).getTime()
                     })).catch(() => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS));

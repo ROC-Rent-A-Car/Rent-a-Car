@@ -8,7 +8,6 @@ export interface User extends TableBase {
     phone: string,
     postal_code: string,
     perm_level: PermLevel,
-    renting: boolean,
     token: string,
     token_expiration: Date | string
 }

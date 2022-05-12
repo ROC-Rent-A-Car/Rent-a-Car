@@ -1,6 +1,6 @@
 import { Status } from "std-node";
+import { SETTINGS } from "..";
 import { Conflict } from "../enums/Conflict";
-import { PermLevel } from "../enums/PermLevel";
 import { RequestMethod } from "../enums/RequestMethod";
 import { UserResponse } from "../interfaces/responses/UserResponse";
 import { User } from "../interfaces/tables/User";
@@ -33,8 +33,8 @@ export class GetUsers extends Controller {
         // Parse the authorization header query
         const { userId, token } = new QueryParser(request.headers.authorization || "");
 
-        // Check if the authorization header has the required fields
-        if (userId && token && Authorize.isAuthorized(userId, token, PermLevel.EMPLOYEE)) { // TODO: Add dedicated perm level
+        // Check if the authorization header has the required fields and is authorized
+        if (userId && token && Authorize.isAuthorized(userId, token, SETTINGS.get("api").user_view_permission)) {
             Query.create<User>("SELECT users.* FROM users").then(
                 (users) => this.respond<UserResponse[]>(response, Status.OK, users.rows.map((user) => ({
                     uuid: user.uuid,
@@ -42,8 +42,7 @@ export class GetUsers extends Controller {
                     email: user.email,
                     phone: user.phone,
                     postalCode: user.postal_code,
-                    permLevel: user.perm_level,
-                    renting: user.renting
+                    permLevel: user.perm_level
                 })))
             ).catch(() => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS));
         } else {

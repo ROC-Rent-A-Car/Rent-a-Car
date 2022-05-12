@@ -15,6 +15,7 @@
     "token_refresh_margin": 2,
     "max_pending": 7,
     "change_perm_level_permission": 2,
+    "user_view_permission": 1,
     "car_creation_permission": 2,
     "car_edit_permission": 2,
     "setup_status_toggle_permission": 1,
