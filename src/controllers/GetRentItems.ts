@@ -138,15 +138,15 @@ export class GetRentItems extends Controller {
                     Query.create<RentItem>(`
                         SELECT 
                             ri.*,
-                            row_to_json(c.*) as carObject,
-                            row_to_json(r_u.*) as rentObject
+                            row_to_json(c.*) as "carObject",
+                            row_to_json(r_u.*) as "rentObject"
                         FROM rent_items as ri
                         INNER JOIN cars as c
                             ON  ri.car = c.uuid
                         INNER JOIN (
                             SELECT 
                                 r.*,
-                                row_to_json(u.*) as userObject
+                                row_to_json(u.*) as "userObject"
                             FROM rents as r
                             INNER JOIN users as u
                                 ON r.user = u.uuid 
@@ -171,7 +171,6 @@ export class GetRentItems extends Controller {
                                 phone: item.rentObject.userObject.phone,
                                 postalCode: item.rentObject.userObject.postal_code,
                                 permLevel: item.rentObject.userObject.perm_level,
-                                renting: item.rentObject.userObject.renting,
                                 token: item.rentObject.userObject.token,
                                 tokenExpiration: new Date(item.rentObject.userObject.token_expiration).getTime()
                             }

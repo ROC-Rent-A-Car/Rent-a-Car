@@ -51,7 +51,7 @@ export class PutRentItem extends Controller {
                 Number(request.body.days) && 
                 fromDate.toString() != "Invalid Date"
             ) {
-                Query.create<Rent>("INSERT INTO rents (user) VALUES ($1) RETURNING *", [
+                Query.create<Rent>("INSERT INTO rents (\"user\") VALUES ($1) RETURNING *", [
                     userId
                 ]).then(({ rows: [ rent ] }) => Query.create<Car>("SELECT * FROM cars WHERE uuid = $1", [ 
                     request.body.car 
@@ -90,7 +90,6 @@ export class PutRentItem extends Controller {
                             phone: user.phone,
                             postalCode: user.postal_code,
                             permLevel: user.perm_level,
-                            renting: user.renting,
                             token: user.token,
                             tokenExpiration: new Date(user.token_expiration).getTime()
                         }

@@ -1,4 +1,4 @@
-import { JSONPrimitive, Status } from "std-node";
+import { Status } from "std-node";
 import { Conflict } from "../enums/Conflict";
 import { RequestMethod } from "../enums/RequestMethod";
 import { CarResponse } from "../interfaces/responses/CarResponse";
@@ -21,6 +21,7 @@ import { Query } from "../utils/Query";
  * - `infoType`: The type of info which should be returned, this can be:
  *   - `top`: All the cars ordered by most rented
  *   - `available`: The currently available cars
+ *   - `unavailable`: The currently unavailable cars
  *   - `cheapest`: All the cars ordered by cheapest price
  *   - `expensive`: All the cars ordered by the most expensive price
  *   - `all`: All the cars without order
@@ -32,7 +33,6 @@ export class GetCars extends Controller {
     }
 
     protected async request(request: request, response: response): Promise<void> {
-        const params: JSONPrimitive[] = [];
         let queryLogic: string | undefined;
 
         // Setting the query conditions
@@ -49,18 +49,17 @@ export class GetCars extends Controller {
                 break;
             }
             case "available": {
-                // TODO: Check if the rent is still pending
                 queryLogic = `
                     WHERE (
                         SELECT COUNT(uuid) 
                         FROM rent_items 
                         WHERE 
-                            car = cars.uuid AND 
-                            rent_from <= now() AND 
-                            (rent_from::DATE + days)::TIMESTAMP >= now()
+                            (SELECT rents.pending FROM rents WHERE rents.uuid = rent_items.rent) = TRUE AND
+                            rent_items.car = cars.uuid AND 
+                            rent_items.rent_from <= now() AND 
+                            (rent_items.rent_from::DATE + rent_items.days)::TIMESTAMP >= now()
                     ) = 0
                 `;
-                params.push();
                 break;
             }
             case "cheapest": {
@@ -79,7 +78,7 @@ export class GetCars extends Controller {
         }
 
         if (queryLogic) {
-            Query.create<Car>(`SELECT cars.* FROM cars ${queryLogic}`, params).then(
+            Query.create<Car>(`SELECT cars.* FROM cars ${queryLogic}`).then(
                 (cars) => this.respond<CarResponse[]>(response, Status.OK, cars.rows.map((car) => ({
                     uuid: car.uuid,
                     license: car.license,
