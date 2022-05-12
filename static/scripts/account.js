@@ -4,14 +4,13 @@
 /// <reference path="APIRequest.js" />
 
 var resetEvent;
-var user = Cookie.get("user") || sessionStorage.getItem("user");
+var user = JSON.parse(Cookie.get("user") || sessionStorage.getItem("user"));
 var form = document.getElementById("form");
 
 if (user) {
     const inputs = form.getElementsByTagName("input");
-    const userObject = JSON.parse(user);
 
-    [...inputs].filter((input) => input.type != "password").forEach((input) => input.value = userObject[input.name]);
+    [...inputs].filter((input) => input.type != "password").forEach((input) => input.value = user[input.name]);
 
     form.addEventListener("submit", (event) => {
         event.preventDefault();
@@ -38,19 +37,19 @@ if (user) {
 
             APIRequest.request("/user", "PATCH", {
                 authorization: constructAuthorization(JSON.parse(user))
-            }, userObject).then(async (response) => {
+            }, user).then(async (response) => {
                 /**
                  * @type {APIResponse<User>}
                  */
                 const { status, message } = await response.json();
 
                 if (status == 202 && typeof message != "string") {
-                    const newUser = JSON.stringify(Object.assign(userObject, newUserObject));
+                    const newUser = JSON.stringify(Object.assign(user, newUserObject));
 
                     sessionStorage.setItem("user", newUser);
 
                     if (!sessionStorage.getItem("disable-cache")) {
-                        Cookie.set("user", newUser, userObject.tokenExpiration);
+                        Cookie.set("user", newUser, user.tokenExpiration);
                     }
                 } else {
                     const messageNode = document.getElementById("message");

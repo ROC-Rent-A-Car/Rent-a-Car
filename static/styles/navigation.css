@@ -18,5 +18,31 @@
 
 .navigation #account {
     position: absolute;
-    right: 10px;
+    right: 0;
+}
+
+.navigation #account p {
+    cursor: pointer;
+    margin: 0 10px;
+}
+
+.navigation #account #account-dropdown {
+    top: 45px;
+    right: 2px;
+    position: absolute;
+    display: none;
+    background-color: white;
+    border: 1px solid var(--accent);
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.25);
+    z-index: 100;
+}
+
+.navigation #account #account-dropdown.show {
+    display: block;
+}
+
+.navigation #account #account-dropdown * {
+    width: 100%;
+    margin: 0;
+    padding: 0 10px;
 }

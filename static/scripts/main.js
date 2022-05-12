@@ -3,8 +3,9 @@
 /// <reference path="Cookie.js" />
 /// <reference path="APIRequest.js" />
 
-var user = Cookie.get("user");
+var user = JSON.parse(Cookie.get("user") || sessionStorage.getItem("user"));
 var nav = document.createElement("div");
+var account = document.createElement("div");
 var footer = document.createElement("div");
 
 nav.id = "nav";
@@ -12,13 +13,18 @@ nav.classList.add("navigation");
 nav.innerHTML = [
     "contact",
     "index",
-    "huren",
-    "inloggen"
-].map((page) => `
-    <a ${page == "inloggen" ? "id=\"account\"" : ""} href="/${page}.html">
+    "huren"
+].map((page, index) => `
+    <a tabindex="${index + 1}" href="/${page}.html">
         ${page == "index" ? "Home" : page.charAt(0).toUpperCase() + page.slice(1)}
     </a>
 `).join("");
+
+account.tabIndex = 4;
+account.id = "account";
+account.innerHTML = `<a id="account-link" href="/inloggen.html">Inloggen</a>`;
+
+nav.appendChild(account);
 
 footer.classList.add("footer");
 footer.innerHTML = `
@@ -30,12 +36,10 @@ document.body.insertBefore(nav, document.body.firstChild);
 document.body.append(footer);
 
 if (sessionStorage.getItem("user")) {
-    replaceLogin();
+    replaceLogin(user);
 } else if (user) {
-    const userObject = JSON.parse(user);
-
     APIRequest.request("/authorize", "GET", {
-        authorization: constructAuthorization(userObject)
+        authorization: constructAuthorization(user)
     }).then(async (response) => {
         /**
          * @type {APIResponse<TokenInfo>}
@@ -43,18 +47,19 @@ if (sessionStorage.getItem("user")) {
         const { status, message } = await response.json();
 
         if (status == 200 && typeof message != "string") {
-            const user = JSON.stringify({
-                ...userObject,
+            const newUserObject = {
+                ...user,
                 ...message
-            });
+            }
+            const newUser = JSON.stringify(newUserObject);
 
-            replaceLogin();
+            replaceLogin(newUserObject);
 
             if (!sessionStorage.getItem("disable-cache")) {
-                Cookie.set("user", user, message.tokenExpiration);
+                Cookie.set("user", newUser, message.tokenExpiration);
             }
-            
-            sessionStorage.setItem("user", user);
+
+            sessionStorage.setItem("user", newUser);
         } else {
             logout();
             
@@ -77,19 +82,55 @@ function logout() {
 }
 
 /**
+ * @param {User} user
  * @returns {void}
  */
-function replaceLogin() {
-    /**
-     * Using query selector with jsdoc to avoid type errors
-     * @type {HTMLLinkElement}
-     */
-    const account = document.querySelector("a#account");
+function replaceLogin(user) {
+    const account = document.querySelector("div#account");
 
-    account.href = "account.html";
-    account.innerHTML = "Account <i class=\"fas fa-user-circle\"></i>";
+    account.innerHTML = `
+        <p>Account <i class=\"fas fa-user-circle\"></i></p>
+        <div id="account-dropdown">
+            <a tabindex="5" href="/account.html">Aanpassen</a>
+            <p tabindex="6" id="logout">Uitloggen</p>
+        </div>
+    `;
+    account.addEventListener("click", () => {
+        const dropdown = document.querySelector("div#account-dropdown");
 
-    
+        dropdown.classList.toggle("show");
+    });
+
+    document.getElementById("logout").addEventListener("click", () => {
+        logout();
+
+        window.location.pathname = "/index.html";
+    });
+
+    if (user.permLevel >= 1) {
+        const dropdown = document.getElementById("account-dropdown");
+        const link = document.createElement("p");
+
+        link.tabIndex = 7;
+        link.innerText = "Beheer";
+        link.addEventListener("click", () => {
+            const form = document.createElement("form");
+
+            form.style.display = "none";
+            form.action = "/beheer/index.html";
+            form.method = "post";
+            form.innerHTML = `
+                <input type="hidden" name="uuid" value="${user.uuid}">
+                <input type="hidden" name="token" value="${user.token}">
+            `;
+
+            document.body.append(form);
+
+            form.submit();
+        });
+
+        dropdown.append(link);
+    }
 }
 
 /**

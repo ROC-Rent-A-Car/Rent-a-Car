@@ -3,6 +3,11 @@
 /// <reference path="Cookie.js" />
 /// <reference path="APIRequest.js" />
 
+/**
+ * @type {Car[]}
+ */
+var available;
+
 APIRequest.request("/cars/available", "GET").then(async (cars) => {
     /**
      * @type {APIResponse<Car[]>}
@@ -10,14 +15,12 @@ APIRequest.request("/cars/available", "GET").then(async (cars) => {
      const { status, message } = await cars.json();
 
      if (status == 200 && typeof message != "string") {
-        const user = Cookie.get("user") || sessionStorage.getItem("user");
+        const user = JSON.parse(Cookie.get("user") || sessionStorage.getItem("user"));
+        available = message;
 
         if (user) {
-            const userObject = JSON.parse(user);
-            const available = message;
-
-            APIRequest.request(`/items/user/${userObject.uuid}`, "GET", {
-                authorization: constructAuthorization(userObject)
+            APIRequest.request(`/items/user/${user.uuid}`, "GET", {
+                authorization: constructAuthorization(user)
             }).then(async (items) => {
                 /**
                  * @type {APIResponse<RentItem[]>}
@@ -30,7 +33,9 @@ APIRequest.request("/cars/available", "GET").then(async (cars) => {
                         document.getElementById("recent").remove();
                     } else {
                         drawSelection(1, "to-hire", available);
-                        drawSelection(1, "recent", message.map((item) => item.car));
+                        drawSelection(1, "recent", message.filter(
+                            (item, index) => index == message.findIndex((subItem) => subItem.car.uuid == item.car.uuid)
+                        ).map((item) => item.car));
                     }
                 } else {
                     throw message;
@@ -95,10 +100,13 @@ function drawRows(section, cars) {
         container.appendChild(image);
         container.appendChild(banner);
         container.addEventListener("click", () => {
-            window.location.href = `/details.html?${constructQuery(Object.fromEntries(Object.entries(car).map(
+            window.location.href = `/details.html?${constructQuery(Object.fromEntries(Object.entries({
+                ...car,
+                hired: (available.find((aCar) => aCar.uuid == car.uuid) == undefined ? "true" : "false")
+            }).map(
                 ([ key, value ]) => [ 
                     key,
-                    window.btoa(value).replace(/\//g, "_").replace(/\+/g, "-").replace(/=/g, "") 
+                    window.btoa(value.toString()).replace(/\//g, "_").replace(/\+/g, "-").replace(/=/g, "") 
                 ]
             )))}`;
         });

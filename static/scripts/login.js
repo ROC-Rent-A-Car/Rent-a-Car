@@ -35,6 +35,7 @@ document.getElementById("form").addEventListener("submit", (event) => {
 
             if (remember == "on") {
                 Cookie.set("user", user, message.tokenExpiration);
+                sessionStorage.removeItem("disable-cache");
             } else {
                 Cookie.delete("user");
                 sessionStorage.removeItem("user");
