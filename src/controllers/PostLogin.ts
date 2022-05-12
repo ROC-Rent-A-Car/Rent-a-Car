@@ -1,4 +1,5 @@
 import { Status } from "std-node";
+import { SETTINGS } from "..";
 import { Conflict } from "../enums/Conflict";
 import { RequestMethod } from "../enums/RequestMethod";
 import { UserResponse } from "../interfaces/responses/UserResponse";
@@ -6,6 +7,7 @@ import { User } from "../interfaces/tables/User";
 import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
 import { response } from "../types/response";
+import { Authorize } from "../utils/Authorize";
 import { Password } from "../utils/Password";
 import { Query } from "../utils/Query";
 import { Username } from "../utils/Username";
@@ -45,8 +47,19 @@ export class PostLogin extends Controller {
             `, [
                 username.transform(),
                 password.transform()
-            ]).then(({ rows: [ user ], rowCount }) => {
+            ]).then(async ({ rows: [ user ], rowCount }) => {
                 if (rowCount) {
+                    if (
+                        new Date(user.token_expiration).setDate(
+                            new Date(user.token_expiration).getDate() - SETTINGS.get("api").token_refresh_margin
+                        ) <= Date.now()
+                    ) {
+                        user = {
+                            ...user,
+                            ... await Authorize.refreshToken(user.uuid) ?? {}
+                        };
+                    }
+
                     this.respond<UserResponse>(response, Status.OK, {
                         uuid: user.uuid,
                         username: user.username,
@@ -54,7 +67,6 @@ export class PostLogin extends Controller {
                         phone: user.phone,
                         postalCode: user.postal_code,
                         permLevel: user.perm_level,
-                        renting: user.renting,
                         token: user.token,
                         tokenExpiration: new Date(user.token_expiration).getTime()
                     });

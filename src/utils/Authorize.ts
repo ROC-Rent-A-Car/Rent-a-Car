@@ -6,6 +6,27 @@ import { Query } from "./Query";
 
 export class Authorize {
     
+    public static refreshToken(uuid: string): Promise<TokenInfo | null> {
+        const date = new Date();
+
+        date.setDate(date.getDate() + SETTINGS.get("api").token_days_valid);
+
+        return new Promise((resolve) => {
+            Query.create<TokenInfo>(`
+                UPDATE users 
+                SET 
+                    token = $1, 
+                    token_expiration = $2
+                WHERE uuid = $3
+                RETURNING *
+            `, [
+                new Token(4).toString(),
+                date,
+                uuid
+            ]).then((newTokenInfo) => resolve(newTokenInfo.rows[0] ?? null)).catch(() => resolve(null));
+        });
+    }
+    
     /**
      * Tries to select the token info of the provided user, this will return null if the provided info isn't valid
      * @param uuid The user UUID
@@ -22,7 +43,7 @@ export class Authorize {
                 FROM users 
                 WHERE 
                     token = $1 AND 
-                    uuid::text = $2 AND 
+                    uuid = $2 AND 
                     token_expiration > now()
             `, [
                 token,
@@ -78,13 +99,13 @@ export class Authorize {
      */
     public static isAuthorized(userLevel: PermLevel, requiredLevel: PermLevel): boolean 
     public static isAuthorized(uuidOrUserLevel: string | PermLevel, tokenOrRequiredLevel: string | PermLevel, requiredLevel?: PermLevel): Promise<boolean> | boolean {
-        if (typeof uuidOrUserLevel == "string" && typeof tokenOrRequiredLevel == "string" && requiredLevel) {
+        if (typeof uuidOrUserLevel == "string" && typeof tokenOrRequiredLevel == "string" && requiredLevel != undefined) {
             return new Promise(async (resolve) => {
                 const userLevel = (await this.getTokenInfo(uuidOrUserLevel, tokenOrRequiredLevel))?.perm_level ?? -1;
 
                 resolve(userLevel != PermLevel.DISABLED && requiredLevel != PermLevel.DISABLED && userLevel >= requiredLevel);
             });
-        } else if (typeof uuidOrUserLevel == "number" && typeof tokenOrRequiredLevel == "number" && !requiredLevel) {
+        } else if (typeof uuidOrUserLevel == "number" && typeof tokenOrRequiredLevel == "number" && requiredLevel == undefined) {
             return uuidOrUserLevel != PermLevel.DISABLED && tokenOrRequiredLevel != PermLevel.DISABLED && uuidOrUserLevel >= tokenOrRequiredLevel;
         } else {
             return false;
