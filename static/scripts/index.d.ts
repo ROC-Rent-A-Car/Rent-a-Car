@@ -1,5 +1,6 @@
 type JSONPrimitive = import("std-node").JSONPrimitive;
 type DynamicObject<T> = import("std-node").DynamicObject<T>;
+type APIObject = import("../../src/interfaces/settings/APIObject").APIObject;
 type TableBase = import("../../src/interfaces/tables/TableBase").TableBase;
 type Car = import("../../src/interfaces/responses/CarResponse").CarResponse;
 type RentItem = import("../../src/interfaces/responses/RentItemResponse").RentItemResponse;

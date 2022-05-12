@@ -1,0 +1,61 @@
+.table-holder {
+    width: 80vw;
+    margin: auto;
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+}
+
+.table-holder #selection {
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    font-size: 19px;
+    display: flex;
+    overflow: hidden;
+    border-bottom: 2px solid var(--accent);
+}
+
+.table-holder #selection * {
+    display: inline-block;
+    cursor: pointer;
+    flex: 1 1 auto;
+}
+
+.table-holder #selection .active {
+    background-color: var(--accent-light);
+}
+
+.table-holder #content {
+    width: 100%;
+}
+
+.table-holder #content {
+    border-collapse: collapse;
+}
+
+.table-holder #content tr {
+    border-top: 1px solid var(--accent);
+}
+
+.table-holder #content th, .table-holder #content td {
+    text-align: left;
+    padding: 7px;
+}
+
+.table-holder #content input {
+    display: inherit;
+    border: none;
+    width: 100%;
+}
+
+.table-holder #content input:read-only {
+    cursor: default;
+}
+
+.table-holder #content input:focus {
+    outline: none;
+}
+
+.table-holder #content:empty {
+    height: 30px;
+}

@@ -39,25 +39,22 @@ APP.use(express.json({
     limit: `${web.max_packet_size}mb`
 }));
 
-// Setting a mandatory authorization for staff endpoints
-APP.use((request, response, next) => {
-    if (request.path.startsWith("/staff")) {
-        if (
-            request.body.uuid && 
-            request.body.token && 
-            Authorize.isAuthorized(request.body.uuid, request.body.token, PermLevel.EMPLOYEE)
-        ) {
-            next();
-        } else {
-            response.status(Status.NOT_FOUND).redirect("/errors/404.html");
-        }
-    } else {
-        next();
-    }
-});
-
 // Setting the static files
 APP.use(express.static(join(__dirname, "../static")));
+
+// Setting a mandatory authorization for the staff endpoint
+APP.use("/beheer", (request, response) => {
+    if (
+        request.method == "POST" &&
+        request.body.uuid && 
+        request.body.token && 
+        Authorize.isAuthorized(request.body.uuid, request.body.token, PermLevel.EMPLOYEE)
+    ) {
+        response.status(Status.OK).sendFile(join(__dirname, "../static/beheer/index.html"));
+    } else {
+        response.status(Status.NOT_FOUND).redirect("/errors/404.html");
+    }
+});
 
 // Iterating over all the controllers to establish them as API endpoints
 BetterArray.from(readdirSync(controllers)).asyncMap(
