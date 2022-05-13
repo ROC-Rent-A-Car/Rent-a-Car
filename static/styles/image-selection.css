@@ -31,7 +31,11 @@
     bottom: 0;
     width: 100%;
     padding: 5px;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.image-selection.spaced .cover .banner * {
+    color: black;
 }
 
 .image-selection img {
@@ -68,7 +72,7 @@
     color: var(--background);
 }
 
-.image-selection .navigation-button.left {
+.image-selection .navigation-button#left {
     left: calc(35vw - 25px);
     right: 0;
     transform: rotate(180deg);

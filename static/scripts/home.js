@@ -10,8 +10,9 @@ APIRequest.request("/cars/top", "GET").then(async (response) => {
 
     if (status == 200) {
         const halfSize = Math.floor(Math.min(message.length, 6) / 2);
+        const cars = Object.values(message);
 
-        document.getElementById("cars").innerHTML += Object.values(message).slice(0, 5).map(
+        document.getElementById("cars").innerHTML += cars.slice(0, 5).map(
             ({ image }, index) => {
                 const indent = halfSize - index;
 
@@ -29,6 +30,23 @@ APIRequest.request("/cars/top", "GET").then(async (response) => {
                 >`;
             }
         ).join("");
+
+        document.getElementById("left").addEventListener("click", () => {
+            cars.push(cars.shift());
+
+            [...document.getElementById("cars").getElementsByTagName("img")].forEach(
+                (img, index) => img.src = `/resources/${cars[index].image}`
+            );
+        });
+
+        document.getElementById("right").addEventListener("click", () => {
+            cars.push(cars.reverse().shift());
+            cars.reverse();
+
+            [...document.getElementById("cars").getElementsByTagName("img")].forEach(
+                (img, index) => img.src = `/resources/${cars[index].image}`
+            );
+        });
     } else {
         throw message;
     }
