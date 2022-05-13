@@ -72,9 +72,10 @@
     /**
      * @param {Event} event 
      * @param {number} index 
+     * @param {string} property 
      * @returns {void}
      */
-    _edit(event, index) {
+    _edit(event, index, property) {
         APIRequest.request(`/car/${this._message[index].uuid}`, "PATCH", {
             authorization: this._authorization
         }, {
