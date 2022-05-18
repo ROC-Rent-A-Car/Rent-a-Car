@@ -38,7 +38,6 @@ document.getElementById("form").addEventListener("submit", (event) => {
                 sessionStorage.removeItem("disable-cache");
             } else {
                 Cookie.delete("user");
-                sessionStorage.removeItem("user");
                 sessionStorage.setItem("disable-cache", "true");
             }
 

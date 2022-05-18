@@ -108,24 +108,30 @@ BetterArray.from(readdirSync(controllers)).asyncMap(
 ).then(() => {
     APP.use((request, response) => {
         response.status(Status.NOT_FOUND);
-        DevConsole.info(
-            "Item requested by \x1b[34m%s\x1b[0m not found on \x1b[34m%s\x1b[0m, accepting: \"\x1b[34m%s\x1b[0m\"", 
-            request.ip,
-            request.url,
-            request.headers.accept ?? ""
-        );
 
-        if (request.accepts("html")) {
-            response.redirect("/errors/404.html");
-        } else if (request.accepts("text/plain")) {
-            response.send("Not found");
-        } else if (request.accepts("image")) {
+        if (request.url == "/favicon.ico") {
+            // Silently ignore favicon
             response.redirect("/resources/placeholder.png");
         } else {
-            response.json({
-                status: Status.NOT_FOUND,
-                message: "Not found"
-            });
+            DevConsole.info(
+                "Item requested by \x1b[34m%s\x1b[0m not found on \x1b[34m%s\x1b[0m, accepting: \"\x1b[34m%s\x1b[0m\"", 
+                request.ip,
+                request.url,
+                request.headers.accept ?? ""
+            );
+
+            if (request.accepts("image")) {
+                response.redirect("/resources/placeholder.png");
+            } else if (request.accepts("text/plain")) {
+                response.send("Not found");
+            } else if (request.accepts("html")) {
+                response.redirect("/errors/404.html");
+            } else {
+                response.json({
+                    status: Status.NOT_FOUND,
+                    message: "Not found"
+                });
+            }
         }
     });
 

@@ -36,7 +36,7 @@ if ([ model, description, price, image ].every(Boolean)) {
                 const { status, message } = await response.json();
 
                 if (status == 201 && typeof message != "string") {
-                    
+                    window.location.href = "/gehuurd.html";
                 } else {
                     throw message;
                 }

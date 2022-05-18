@@ -130,7 +130,7 @@ export class Authorize {
         token?: string, 
         requiredLevel?: PermLevel
     ): Promise<boolean> | boolean {
-        if (typeof ipOrUserLevel == "string" && typeof uuidOrRequiredLevel == "string" && token && requiredLevel) {
+        if (typeof ipOrUserLevel == "string" && typeof uuidOrRequiredLevel == "string" && token && typeof requiredLevel != "undefined") {
             return new Promise(async () => this.isAuthorized((await this.getTokenInfo(
                 ipOrUserLevel,
                 uuidOrRequiredLevel,

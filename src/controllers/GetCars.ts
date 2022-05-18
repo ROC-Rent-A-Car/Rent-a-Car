@@ -54,10 +54,11 @@ export class GetCars extends Controller {
                         SELECT COUNT(uuid) 
                         FROM rent_items 
                         WHERE 
-                            (SELECT rents.pending FROM rents WHERE rents.uuid = rent_items.rent) = TRUE AND
                             rent_items.car = cars.uuid AND 
-                            rent_items.rent_from <= now() AND 
-                            (rent_items.rent_from::DATE + rent_items.days)::TIMESTAMP >= now()
+                            (
+                                rent_items.rent_from::DATE = CURRENT_DATE OR 
+                                (rent_items.rent_from::DATE + rent_items.days)::TIMESTAMP >= now()
+                            )
                     ) = 0
                 `;
                 break;
