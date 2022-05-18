@@ -3,16 +3,16 @@
  */
 export abstract class Type {
 
-    protected readonly value: string | undefined;
+    protected readonly value: string;
 
-    constructor(value: string | undefined) {
+    constructor(value: string) {
         this.value = value;
     }
 
     /**
      * Transforms the provided value to a standard
      */
-    public transform(): string | undefined {
+    public transform(): string {
         return this.value;
     };
 

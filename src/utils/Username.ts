@@ -3,7 +3,7 @@ import { Type } from "../templates/Type";
 export class Username extends Type {
 
     constructor(username: string | undefined) {
-        super(username);
+        super(username ?? "");
     }
 
     public validate(): boolean {

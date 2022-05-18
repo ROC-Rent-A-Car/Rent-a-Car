@@ -2,8 +2,8 @@ import { Type } from "../templates/Type";
 
 export class PhoneNumber extends Type {
 
-    constructor(phoneNumber: string) {
-        super(phoneNumber);
+    constructor(phoneNumber: string | undefined) {
+        super(phoneNumber ?? "");
     }
 
     /**

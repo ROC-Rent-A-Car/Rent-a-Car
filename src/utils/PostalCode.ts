@@ -2,8 +2,8 @@ import { Type } from "../templates/Type";
 
 export class PostalCode extends Type {
 
-    constructor(postalCode: string) {
-        super(postalCode);
+    constructor(postalCode: string | undefined) {
+        super(postalCode ?? "");
     }
 
     public validate(): boolean {

@@ -3,8 +3,8 @@ import { Type } from "../templates/Type";
 
 export class Password extends Type {
 
-    constructor(password: string) {
-        super(password);
+    constructor(password: string | undefined) {
+        super(password ?? "");
     }
 
     /**

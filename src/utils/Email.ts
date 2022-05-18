@@ -2,8 +2,8 @@ import { Type } from "../templates/Type";
 
 export class Email extends Type {
 
-    constructor(email: string) {
-        super(email);
+    constructor(email: string | undefined) {
+        super(email ?? "");
     }
 
     /**
