@@ -22,5 +22,11 @@
     "rent_status_toggle_permission": 1,
     "rent_history_permission": 1,
     "rent_administration_permission": 1
+  },
+  "security": {
+    "warning_sample_length": 20,
+    "requests_before_warning": 100,
+    "ip_requests_before_warning": 20,
+    "endpoint_requests_before_warning": 40
   }
 }

@@ -1,8 +1,8 @@
 import { join } from "path";
 import { Pool } from "pg";
 import express from "express";
-import { readdirSync, readFileSync } from "fs";
-import { BetterArray, DevConsole, Status } from "std-node";
+import { appendFileSync, readdirSync, readFileSync } from "fs";
+import { BetterArray, DevConsole, DynamicObject, Status } from "std-node";
 import { urlencoded } from "body-parser";
 import { Settings } from "./utils/Settings";
 import { config } from "dotenv";
@@ -27,8 +27,33 @@ export const DB = new Pool({
 const web = SETTINGS.get("web");
 const controllers = join(__dirname, "controllers/");
 
+// Storing the console output file path and current date
+const consoleOutput = join(__dirname, "../output.log");
+const date = new Date();
+
+// Storing some basic variables required to sample requests
+const security = SETTINGS.get("security");
+const sampleInteractions = {
+    totalInteractions: 0,
+    ipInteractions: <DynamicObject<number>>{},
+    endpointInteractions: <DynamicObject<number>>{}
+};
+
+// Sample interactions cleanup routine
+setInterval(() => {
+    sampleInteractions.totalInteractions = 0;
+    sampleInteractions.ipInteractions = {};
+    sampleInteractions.endpointInteractions = {};
+}, security.warning_sample_length * 1e3);
+
 // Listening and logging database errors
 DB.on("error", DevConsole.error);
+
+// Saving logs
+DevConsole.on("output", (log) => appendFileSync(consoleOutput, `${log.split(/\x1b\[\d{1,2}m/).join("")}\n`));
+appendFileSync(consoleOutput, `----======== Instance started at ${
+    new Date(date.setMinutes(date.getMinutes() + date.getTimezoneOffset())).toLocaleString("en-GB")
+} =========----\n`);
 
 // Setting POST field settings
 APP.use(urlencoded({ 
@@ -39,6 +64,27 @@ APP.use(express.json({
     limit: `${web.max_packet_size}mb`
 }));
 
+// Setting a logger
+APP.use((request, _, next) => {
+    // If this doesn't work then sorry but I'm not going to buy a domain just to check if this keeps giving the default IP
+    DevConsole.info("\x1b[34m%s\x1b[0m requested \x1b[34m%s\x1b[0m", request.ip, request.url);
+
+    sampleInteractions.totalInteractions++;
+    sampleInteractions.ipInteractions[request.ip] = (sampleInteractions.ipInteractions[request.ip] ?? 0) + 1;
+    sampleInteractions.ipInteractions[request.path] = (sampleInteractions.ipInteractions[request.path] ?? 0) + 1;
+
+    const ipOverload = request.ip != "127.0.0.1" && sampleInteractions.ipInteractions[request.ip] >= security.ip_specific_requests_before_warning;
+    const endpointOverload = sampleInteractions.ipInteractions[request.path] >= security.endpoint_specific_requests_before_warning;
+
+    if (ipOverload || endpointOverload) {
+        alarmLog(ipOverload ? request.ip : "Varied", endpointOverload ? request.path : "Varied");
+    } else if (sampleInteractions.totalInteractions >= security.requests_before_warning) {
+        alarmLog();
+    }
+
+    next();
+});
+
 // Setting the static files
 APP.use(express.static(join(__dirname, "../static")));
 
@@ -48,7 +94,7 @@ APP.use("/beheer", (request, response) => {
         request.method == "POST" &&
         request.body.uuid && 
         request.body.token && 
-        Authorize.isAuthorized(request.body.uuid, request.body.token, PermLevel.EMPLOYEE)
+        new Authorize().isAuthorized(request.ip, request.body.uuid, request.body.token, PermLevel.EMPLOYEE)
     ) {
         response.status(Status.OK).sendFile(join(__dirname, "../static/beheer/index.html"));
     } else {
@@ -62,6 +108,12 @@ BetterArray.from(readdirSync(controllers)).asyncMap(
 ).then(() => {
     APP.use((request, response) => {
         response.status(Status.NOT_FOUND);
+        DevConsole.info(
+            "Item requested by \x1b[34m%s\x1b[0m not found on \x1b[34m%s\x1b[0m, accepting: \"\x1b[34m%s\x1b[0m\"", 
+            request.ip,
+            request.url,
+            request.headers.accept ?? ""
+        );
 
         if (request.accepts("html")) {
             response.redirect("/errors/404.html");
@@ -80,3 +132,15 @@ BetterArray.from(readdirSync(controllers)).asyncMap(
     // Starting the web app
     APP.listen(web.port, web.host, () => DevConsole.info("Listening to \x1b[34m%s:%s\x1b[0m", web.host, web.port.toString()));
 });
+
+// Declaring an alarm logging method
+function alarmLog(ip: string = "Varied", endpoint: string = "Varied"): void {
+    [
+        "--------------- !!! WARNING !!! ---------------",
+        "",
+        "An elevated amount of requests was detected!",
+        `Endpoint: ${endpoint}, IP: ${ip}`,
+        "",
+        "-----------------------------------------------"
+    ].forEach((log) => DevConsole.warn("\x1b[1m\x1b[3m%s\x1b[0m", log));
+}
