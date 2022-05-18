@@ -6,7 +6,6 @@ import { User } from "../interfaces/tables/User";
 import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
 import { response } from "../types/response";
-import { Authorize } from "../utils/Authorize";
 import { Email } from "../utils/Email";
 import { Password } from "../utils/Password";
 import { PhoneNumber } from "../utils/PhoneNumber";
@@ -54,12 +53,12 @@ export class PatchUser extends Controller {
         // Check if the authorization header has the required fields
         if (userId && token) {
             // Get info about the current user token
-            const tokenInfo = await Authorize.getTokenInfo(userId, token);
+            const tokenInfo = await this.getTokenInfo(request.ip, userId, token);
 
             if (!tokenInfo) {
                 // The authorization wasn't valid
                 this.respond(response, Status.UNAUTHORIZED, Conflict.INVALID_AUTHORIZATION);
-            } else if (Authorize.isAuthorized(tokenInfo.perm_level, SETTINGS.get("api").change_perm_level_permission)) {
+            } else if (this.isAuthorized(tokenInfo.perm_level, SETTINGS.get("api").change_perm_level_permission)) {
                 // If there's an ID overwrite it's only used to overwrite the permission level
                 Query.update<User>({
                     perm_level: request.body.permLevel

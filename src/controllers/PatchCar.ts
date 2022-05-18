@@ -6,7 +6,6 @@ import { Car } from "../interfaces/tables/Car";
 import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
 import { response } from "../types/response";
-import { Authorize } from "../utils/Authorize";
 import { Query } from "../utils/Query";
 import { QueryParser } from "../utils/QueryParser";
 
@@ -48,7 +47,7 @@ export class PatchCar extends Controller {
         const { userId, token } = new QueryParser(request.headers.authorization || "");
 
         // Check if the authorization header has the required fields and has the correct permission level
-        if (userId && token && Authorize.isAuthorized(userId, token, SETTINGS.get("api").car_edit_permission)) {
+        if (userId && token && this.isAuthorized(request.ip, userId, token, SETTINGS.get("api").car_edit_permission)) {
             Query.update<Car>({
                 license: request.body.license,
                 brand: request.body.brand,

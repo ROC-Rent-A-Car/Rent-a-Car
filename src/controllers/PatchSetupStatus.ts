@@ -5,7 +5,6 @@ import { RequestMethod } from "../enums/RequestMethod";
 import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
 import { response } from "../types/response";
-import { Authorize } from "../utils/Authorize";
 import { Query } from "../utils/Query";
 import { QueryParser } from "../utils/QueryParser";
 
@@ -41,7 +40,7 @@ export class PatchSetupStatus extends Controller {
         const { userId, token } = new QueryParser(request.headers.authorization || "");
 
         // Check if the authorization header has the required fields and has the correct permission level
-        if (userId && token && Authorize.isAuthorized(userId, token, SETTINGS.get("api").car_edit_permission)) {
+        if (userId && token && this.isAuthorized(request.ip, userId, token, SETTINGS.get("api").car_edit_permission)) {
             // Validate the fields
             if (request.body.status) {
                 Query.create("UPDATE rent_items SET setup = $1 WHERE uuid = $2", [

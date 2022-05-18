@@ -7,7 +7,6 @@ import { User } from "../interfaces/tables/User";
 import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
 import { response } from "../types/response";
-import { Authorize } from "../utils/Authorize";
 import { Query } from "../utils/Query";
 import { QueryParser } from "../utils/QueryParser";
 
@@ -34,7 +33,7 @@ export class GetUsers extends Controller {
         const { userId, token } = new QueryParser(request.headers.authorization || "");
 
         // Check if the authorization header has the required fields and is authorized
-        if (userId && token && Authorize.isAuthorized(userId, token, SETTINGS.get("api").user_view_permission)) {
+        if (userId && token && this.isAuthorized(request.ip, userId, token, SETTINGS.get("api").user_view_permission)) {
             Query.create<User>("SELECT users.* FROM users").then(
                 (users) => this.respond<UserResponse[]>(response, Status.OK, users.rows.map((user) => ({
                     uuid: user.uuid,

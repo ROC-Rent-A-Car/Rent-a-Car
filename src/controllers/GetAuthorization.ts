@@ -5,7 +5,6 @@ import { TokenInfoResponse } from "../interfaces/responses/TokenInfoResponse";
 import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
 import { response } from "../types/response";
-import { Authorize } from "../utils/Authorize";
 import { QueryParser } from "../utils/QueryParser";
 
 /**
@@ -33,12 +32,12 @@ export class GetAuthorization extends Controller {
         // Check if the authorization header has the required fields
         if (userId && token) {
             // Get info about the current user token
-            const tokenInfo = await Authorize.getTokenInfo(userId, token);
+            const tokenInfo = await this.getTokenInfo(request.ip, userId, token);
 
             // Check if there was a token match
             if (tokenInfo) {
                 this.respond<TokenInfoResponse>(response, Status.OK, {
-                    tokenExpiration: tokenInfo.token_expiration.getTime(),
+                    tokenExpiration: new Date(tokenInfo.token_expiration).getTime(),
                     token: tokenInfo.token,
                     permLevel: tokenInfo.perm_level
                 });

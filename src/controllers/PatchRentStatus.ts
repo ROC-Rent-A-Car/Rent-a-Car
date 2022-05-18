@@ -5,7 +5,6 @@ import { RequestMethod } from "../enums/RequestMethod";
 import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
 import { response } from "../types/response";
-import { Authorize } from "../utils/Authorize";
 import { Query } from "../utils/Query";
 import { QueryParser } from "../utils/QueryParser";
 
@@ -44,7 +43,7 @@ export class PatchRentStatus extends Controller {
             // Validate the fields
             if (request.body.status) {
                 // Get info about the current user token
-                const tokenInfo = await Authorize.getTokenInfo(userId, token);
+                const tokenInfo = await this.getTokenInfo(request.ip, userId, token);
 
                 // Check if there was a token match
                 if (tokenInfo) {
@@ -55,7 +54,7 @@ export class PatchRentStatus extends Controller {
                         request.params.itemId
                     ];
 
-                    if (!Authorize.isAuthorized(tokenInfo.perm_level, SETTINGS.get("api").rent_status_toggle_permission)) {
+                    if (!this.isAuthorized(tokenInfo.perm_level, SETTINGS.get("api").rent_status_toggle_permission)) {
                         query += " AND user = $3";
                         
                         params.push(userId);

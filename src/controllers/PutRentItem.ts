@@ -10,7 +10,6 @@ import { User } from "../interfaces/tables/User";
 import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
 import { response } from "../types/response";
-import { Authorize } from "../utils/Authorize";
 import { Query } from "../utils/Query";
 import { QueryParser } from "../utils/QueryParser";
 
@@ -43,7 +42,7 @@ export class PutRentItem extends Controller {
         const { userId, token } = new QueryParser(request.headers.authorization || "");
 
         // Check if the authorization header has the required fields and has the correct permission level
-        if (userId && token && Authorize.isAuthorized(userId, token, PermLevel.USER)) {
+        if (userId && token && this.isAuthorized(request.ip, userId, token, PermLevel.USER)) {
             const fromDate = new Date(request.body.from)
             
             if (

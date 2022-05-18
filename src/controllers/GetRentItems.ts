@@ -7,7 +7,6 @@ import { RentItem } from "../interfaces/tables/RentItem";
 import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
 import { response } from "../types/response";
-import { Authorize } from "../utils/Authorize";
 import { Query } from "../utils/Query";
 import { QueryParser } from "../utils/QueryParser";
 
@@ -46,7 +45,7 @@ export class GetRentItems extends Controller {
         // Check if the authorization header has the required fields
         if (userId && token) {
             // Get info about the current user token
-            const tokenInfo = await Authorize.getTokenInfo(userId, token);
+            const tokenInfo = await this.getTokenInfo(request.ip, userId, token);
 
             // Check if there was a token match
             if (tokenInfo) {
@@ -98,12 +97,12 @@ export class GetRentItems extends Controller {
                 if (
                     request.params.uuid && 
                     normalInfoType in history && 
-                    Authorize.isAuthorized(tokenInfo.perm_level, rent_history_permission)
+                    this.isAuthorized(tokenInfo.perm_level, rent_history_permission)
                 ) {
                     additionalLogic = history[normalInfoType]();
                 } else if (
                     normalInfoType in administrative && 
-                    Authorize.isAuthorized(tokenInfo.perm_level, rent_administration_permission)
+                    this.isAuthorized(tokenInfo.perm_level, rent_administration_permission)
                 ) {
                     additionalLogic = administrative[normalInfoType]();
                 } else {

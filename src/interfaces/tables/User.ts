@@ -1,13 +1,9 @@
-import { PermLevel } from "../../enums/PermLevel";
-import { TableBase } from "./TableBase";
+import { TokenInfo } from "./TokenInfo";
 
-export interface User extends TableBase {
+export interface User extends TokenInfo {
     username: string,
     password_hash: string,
     email: string,
     phone: string,
-    postal_code: string,
-    perm_level: PermLevel,
-    token: string,
-    token_expiration: Date | string
+    postal_code: string
 }

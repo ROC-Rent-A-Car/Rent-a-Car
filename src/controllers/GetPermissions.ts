@@ -6,7 +6,6 @@ import { APIObject } from "../interfaces/settings/APIObject";
 import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
 import { response } from "../types/response";
-import { Authorize } from "../utils/Authorize";
 import { QueryParser } from "../utils/QueryParser";
 
 /**
@@ -34,7 +33,7 @@ export class GetPermissions extends Controller {
         // Check if the authorization header has the required fields
         if (userId && token) {
             // Get info about the current user token
-            const tokenInfo = await Authorize.getTokenInfo(userId, token);
+            const tokenInfo = await this.getTokenInfo(request.ip, userId, token);
 
             // Check if there was a token match
             if (tokenInfo) {

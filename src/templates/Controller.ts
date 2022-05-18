@@ -4,13 +4,16 @@ import { response } from "../types/response";
 import { RequestMethod } from "../enums/RequestMethod";
 import { DevConsole, Status } from "std-node";
 import { APP, SETTINGS } from "..";
+import { Authorize } from "../utils/Authorize";
 
 /**
  * A template which handles the API controller registration
  */
-export abstract class Controller {
+export abstract class Controller extends Authorize {
 
     constructor(path: string, method: RequestMethod, versionOverride?: number) {
+        super();
+        
         // Transforms the path string to make sure that API versions are supported
         path = `/api/v${versionOverride || SETTINGS.get("api").version}/${path.startsWith("/") ? path.slice(1) : path}`;
 
