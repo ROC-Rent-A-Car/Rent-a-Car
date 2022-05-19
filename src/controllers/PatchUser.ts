@@ -58,11 +58,18 @@ export class PatchUser extends Controller {
             if (!tokenInfo) {
                 // The authorization wasn't valid
                 this.respond(response, Status.UNAUTHORIZED, Conflict.INVALID_AUTHORIZATION);
-            } else if (this.isAuthorized(tokenInfo.perm_level, SETTINGS.get("api").change_perm_level_permission)) {
+            } else if (
+                typeof request.params.overwriteId != "undefined" &&
+                this.isAuthorized(tokenInfo.perm_level, SETTINGS.get("api").change_perm_level_permission)
+            ) {
                 // If there's an ID overwrite it's only used to overwrite the permission level
                 Query.update<User>({
                     perm_level: request.body.permLevel
-                }, "users", request.params.overwriteId)
+                }, "users", request.params.overwriteId).then(
+                    () => this.respond(response, Status.ACCEPTED)
+                ).catch(
+                    () => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS)
+                );
             } else {
                 const password = request.body.password ? new Password(request.body.password) : undefined;
                 const email = request.body.password ? new Email(request.body.email) : undefined;

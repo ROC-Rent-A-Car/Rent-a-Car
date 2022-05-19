@@ -10,7 +10,9 @@ var form = document.getElementById("form");
 if (user) {
     const inputs = form.getElementsByTagName("input");
 
-    [...inputs].filter((input) => input.type != "password").forEach((input) => input.value = user[input.name]);
+    [...inputs].filter(
+        (input) => input.type != "password" && input.type != "submit"
+    ).forEach((input) => input.value = user[input.name]);
 
     form.addEventListener("submit", (event) => {
         event.preventDefault();
@@ -20,48 +22,66 @@ if (user) {
             clearTimeout(resetEvent);
         }
 
-        /**
-         * @type {DynamicObject<string>}
-         */
         // @ts-ignore
-        const { username, password, verPassword, email, phone, postalCode } = Object.entries([...new FormData(event.target)]);
+        const form = [...new FormData(event.target)];
+        const { username, password, verPassword, email, phone, postalCode } = Object.fromEntries(form);
 
-        if (password == verPassword) {
-            const newUserObject = {
-                username,
-                password,
-                email,
-                phone,
-                postalCode
-            };
+        if (password) {
+            if (form.filter(([ key ]) => key.toLowerCase().includes("password")).some(
+                ([ key, value ]) => user[key] != value
+            ) || password == verPassword) {
+                const newUserObject = {
+                    username,
+                    password: password == verPassword ? password : undefined,
+                    email,
+                    phone,
+                    postalCode
+                };
 
-            APIRequest.request("/user", "PATCH", {
-                authorization: constructAuthorization(JSON.parse(user))
-            }, user).then(async (response) => {
-                /**
-                 * @type {APIResponse<User>}
-                 */
-                const { status, message } = await response.json();
+                APIRequest.request("/user", "PATCH", {
+                    authorization: constructAuthorization(user)
+                }, user).then(async (response) => {
+                    /**
+                     * @type {APIResponse<User>}
+                     */
+                    const { status, message } = await response.json();
 
-                if (status == 202 && typeof message != "string") {
-                    const newUser = JSON.stringify(Object.assign(user, newUserObject));
+                    if (status == 202 && typeof message != "string") {
+                        const newUser = JSON.stringify(Object.assign(user, newUserObject));
 
-                    sessionStorage.setItem("user", newUser);
+                        sessionStorage.setItem("user", newUser);
 
-                    if (!sessionStorage.getItem("disable-cache")) {
-                        Cookie.set("user", newUser, user.tokenExpiration);
+                        if (!sessionStorage.getItem("disable-cache")) {
+                            Cookie.set("user", newUser, user.tokenExpiration);
+                        }
+
+                        show("Account bijgewerkt", "green");
+                    } else {
+                        show(JSON.stringify(message), "red");
+
+                        throw message;
                     }
-                } else {
-                    const messageNode = document.getElementById("message");
-
-                    messageNode.innerText = JSON.stringify(message);
-                    resetEvent = setTimeout(() => messageNode.innerText = "", 3e3);
-
-                    throw message;
-                }
-            }).catch(console.error);
+                }).catch(console.error);
+            } else {
+                show("Bevestig uw wachtwoord", "red");
+            }
+        } else {
+            show("Vul uw wachtwoord in", "red");
         }
     });
 } else {
     form.remove();
+}
+
+/**
+ * @param {string} message 
+ * @param {string} color 
+ * @returns {void}
+ */
+function show(message, color) {
+    const messageNode = document.getElementById("message");
+    
+    messageNode.style.color = color;
+    messageNode.innerText = JSON.stringify(message);
+    resetEvent = setTimeout(() => messageNode.innerText = "", 3e3);
 }
