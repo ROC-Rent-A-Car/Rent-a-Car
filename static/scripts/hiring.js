@@ -7,8 +7,11 @@
  * @type {Car[]}
  */
 var available;
+var params = new URLSearchParams(window.location.search);
+var from = params.get("from");
+var to = params.get("to");
 
-APIRequest.request("/cars/available", "GET").then(async (cars) => {
+APIRequest.request(`/cars/available?${constructQuery({ from, to })}`, "GET").then(async (cars) => {
     /**
      * @type {APIResponse<Car[]>}
      */
@@ -28,7 +31,7 @@ APIRequest.request("/cars/available", "GET").then(async (cars) => {
                 const { status, message } = await items.json();
 
                 if (status == 200 && typeof message != "string") {
-                    if (message.length == 0) {
+                    if (!message.length) {
                         drawSelection(2, "to-hire", available);
                         document.getElementById("recent").remove();
                     } else {
@@ -101,14 +104,10 @@ function drawRows(section, cars) {
         container.appendChild(banner);
         container.addEventListener("click", () => {
             window.location.href = `/details.html?${constructQuery(Object.fromEntries(Object.entries({
-                ...car,
-                hired: (available.find((aCar) => aCar.uuid == car.uuid) == undefined ? "true" : "false")
-            }).map(
-                ([ key, value ]) => [ 
-                    key,
-                    window.btoa(value.toString()).replace(/\//g, "_").replace(/\+/g, "-").replace(/=/g, "") 
-                ]
-            )))}`;
+                uuid: car.uuid,
+                from,
+                to
+            })))}`;
         });
 
         if (button) {
