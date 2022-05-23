@@ -6,26 +6,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <link href="styles/main.css" rel="stylesheet">
-    <link href="styles/image-selection.css" rel="stylesheet">
     <script defer src="scripts/Cookie.js"></script>
     <script defer src="scripts/APIRequest.js"></script>
     <script defer src="scripts/main.js"></script>
     <script defer src="scripts/home.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.css" rel="stylesheet">
     <link href="https://nealvos.s3.eu-west-2.amazonaws.com/fontawesome/web/fontawesome-pro-5.9.0-web/css/all.css" rel="stylesheet">
     <script src="https://nealvos.s3.eu-west-2.amazonaws.com/fontawesome/web/fontawesome-pro-5.9.0-web/js/all.js"></script>
-    <style>
-        p {
-            max-width: 70vw;
-            margin: 0 auto;
-        }
-    </style>
 </head>
 <body>
-    <div id="cars" class="image-selection">
-        <span id="left" class="navigation-button"></span>
-        <span id="right" class="navigation-button"></span>
+    <span class="cover-image"></span>
+    <span class="cover-page"></span>
+    <div class="center-embed">
+        <h1>Selecteer een datum</h1>
+        <form id="form">
+            <label for="from">Vanaf</label>
+            <input id="from" type="picker" required readonly>
+            <label for="to">Tot</label>
+            <input id="to" type="picker">
+            <input type="submit" value="Zoeken" required readonly>
+            <p id="message"></p>
+        </form>
     </div>
-    <h1>About Rent-a-Car</h1>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Amet cursus sit amet dictum. Sed blandit libero volutpat sed cras. Dui faucibus in ornare quam viverra orci. Molestie at elementum eu facilisis sed odio. Dis parturient montes nascetur ridiculus mus mauris vitae ultricies leo. Id nibh tortor id aliquet lectus proin. Auctor augue mauris augue neque gravida. Facilisi cras fermentum odio eu feugiat pretium nibh ipsum consequat. Eget aliquet nibh praesent tristique magna sit amet. Lectus sit amet est placerat. Euismod lacinia at quis risus sed vulputate odio ut. In mollis nunc sed id semper risus.</p>
 </body>
 </html>

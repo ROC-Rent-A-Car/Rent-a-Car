@@ -1,53 +1,68 @@
 // @ts-check
 /// <reference path="index.d.ts" />
-/// <reference path="APIRequest.js" />
+/// <reference path="Cookie.js" />
 
-APIRequest.request("/cars/top", "GET").then(async (response) => {
+var resetEvent;
+var date = new Date(Date.now() + 864e5);
+
+[
+    "from",
+    "to"
+].forEach((id, index) => {
     /**
-     * @type {APIResponse<Car[]>}
+     * @type {HTMLInputElement}
      */
-    const { status, message } = await response.json();
+    const input = document.querySelector(`#${id}`);
 
-    if (status == 200) {
-        const halfSize = Math.floor(Math.min(message.length, 6) / 2);
-        const cars = Object.values(message);
-
-        document.getElementById("cars").innerHTML += cars.slice(0, 5).map(
-            ({ image }, index) => {
-                const indent = halfSize - index;
-
-                return `<img 
-                    style="
-                        z-index: ${indent - Math.abs(indent)};
-                        right: calc(40vw - ${indent * -15}vw); 
-                        filter: 
-                            brightness(${1 - Math.abs(indent * 0.2)}) 
-                            blur(${Math.abs(indent * 2)}px)
-                        ;
-                    " 
-                    src="/resources/${image}" 
-                    alt="car"
-                >`;
-            }
-        ).join("");
-
-        document.getElementById("left").addEventListener("click", () => {
-            cars.push(cars.shift());
-
-            [...document.getElementById("cars").getElementsByTagName("img")].forEach(
-                (img, index) => img.src = `/resources/${cars[index].image}`
-            );
-        });
-
-        document.getElementById("right").addEventListener("click", () => {
-            cars.push(cars.reverse().shift());
-            cars.reverse();
-
-            [...document.getElementById("cars").getElementsByTagName("img")].forEach(
-                (img, index) => img.src = `/resources/${cars[index].image}`
-            );
-        });
+    if (index) {
+        date.setDate(date.getDate() + 1);
     } else {
-        throw message;
+        date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
     }
-}).catch(console.error);
+
+    const timeString = date.toISOString().split(/:\d{2}\./)[0].replace("T", " ");
+    
+    input.value = timeString;
+    input.min = timeString;
+});
+
+// @ts-ignore
+$(() => $("input[type=picker]").datetimepicker({ dateFormat: "yy-mm-dd" }));
+
+document.getElementById("form").addEventListener("submit", (event) => {
+    // @ts-ignore
+    const from = +new Date(document.getElementById("from").value);
+    // @ts-ignore
+    const to = +new Date(document.getElementById("to").value); 
+
+    event.preventDefault();
+
+    if (!isNaN(from) && !isNaN(to)) {
+        if (from > Date.now()) {
+            const deltaDay = Math.ceil((to - from) / 864e5);
+
+            if (deltaDay) {
+                window.location.href = `/huren.html?${constructQuery({ from, to })}`;
+            } else {
+                show("De datum moet minstens één dag later zijn.", "red");
+            }
+        } else {
+            show("De datum moet minstens later vandaag zijn.", "red");
+        }
+    } else {
+        show("De datum moet een geldige datum zijn.", "red");
+    }
+});
+
+/**
+ * @param {string} message 
+ * @param {string} color 
+ * @returns {void}
+ */
+ function show(message, color) {
+    const messageNode = document.getElementById("message");
+    
+    messageNode.style.color = color;
+    messageNode.innerText = message;
+    resetEvent = setTimeout(() => messageNode.innerText = "", 3e3);
+}

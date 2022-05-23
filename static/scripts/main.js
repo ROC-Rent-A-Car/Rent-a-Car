@@ -13,7 +13,7 @@ nav.classList.add("navigation");
 nav.innerHTML = [
     "contact",
     "index",
-    "huren"
+    "about"
 ].map((page, index) => `
     <a tabindex="${index + 1}" href="/${page}.html">
         ${page == "index" ? "Home" : page.charAt(0).toUpperCase() + page.slice(1)}

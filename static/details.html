@@ -10,6 +10,11 @@
     <script defer src="scripts/APIRequest.js"></script>
     <script defer src="scripts/main.js"></script>
     <script defer src="scripts/details.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.css" rel="stylesheet">
     <link href="https://nealvos.s3.eu-west-2.amazonaws.com/fontawesome/web/fontawesome-pro-5.9.0-web/css/all.css" rel="stylesheet">
     <script src="https://nealvos.s3.eu-west-2.amazonaws.com/fontawesome/web/fontawesome-pro-5.9.0-web/js/all.js"></script>
 </head>
@@ -25,9 +30,14 @@
             </div>
             <div class="details">
                 <b>Prijs per dag: </b>
-                <p id="price">€0.00</p>
+                <p id="price">€0,-</p>
             </div>
+            <label for="from"><b>Vanaf</b></label>
+            <input name="from" id="from" type="picker">
+            <label for="to"><b>Tot</b></label>
+            <input name="to" id="to" type="picker">
             <input value="Huren" type="submit">
+            <p id="message"></p>
         </div>
     </div>
 </body>
