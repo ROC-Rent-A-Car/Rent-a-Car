@@ -7,6 +7,7 @@ type RentItem = import("../../src/interfaces/responses/RentItemResponse").RentIt
 type Rent = import("../../src/interfaces/responses/RentResponse").RentResponse;
 type TokenInfo = import("../../src/interfaces/responses/TokenInfoResponse").TokenInfoResponse;
 type User = import("../../src/interfaces/responses/UserResponse").UserResponse;
+type DateRange = import("../../src/interfaces/responses/DateRangeResponse").DateRangeResponse;
 
 interface APIResponse<T> {
     status: number,
