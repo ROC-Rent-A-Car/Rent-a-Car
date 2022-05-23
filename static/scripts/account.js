@@ -82,6 +82,6 @@ function show(message, color) {
     const messageNode = document.getElementById("message");
     
     messageNode.style.color = color;
-    messageNode.innerText = JSON.stringify(message);
+    messageNode.innerText = message;
     resetEvent = setTimeout(() => messageNode.innerText = "", 3e3);
 }
