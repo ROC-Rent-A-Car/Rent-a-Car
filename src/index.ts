@@ -110,6 +110,12 @@ APP.use("/beheer", (request, response) => {
 BetterArray.from(readdirSync(controllers)).asyncMap(
     async (endpoint) => new (await import(join(controllers, endpoint)))[endpoint.split(".")[0]]()
 ).then(() => {
+    const port = parseInt(<string>process.env.PORT) || web.port;
+    const successCallback = () => DevConsole.info(
+        "Listening to \x1b[34m%s:%s\x1b[0m", 
+        web.host, 
+        port.toString()
+    );
     APP.use((request, response) => {
         response.status(Status.NOT_FOUND);
 
@@ -139,16 +145,12 @@ BetterArray.from(readdirSync(controllers)).asyncMap(
         }
     });
 
-    console.log(parseInt(<string>process.env.PORT))
-
     // Starting the web app
-    APP.listen(
-        parseInt(<string>process.env.PORT) || web.port, 
-        web.host, 
-        () => DevConsole.info("Listening to \x1b[34m%s:%s\x1b[0m", web.host, (
-            parseInt(<string>process.env.PORT) || web.port
-        ).toString())
-    );
+    if (process.env.PORT) {
+        APP.listen(port, successCallback);
+    } else {
+        APP.listen(port, web.host, successCallback);
+    }
 });
 
 // Declaring an alarm logging method
