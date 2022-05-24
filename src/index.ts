@@ -16,12 +16,20 @@ config();
 export const SETTINGS = new Settings(JSON.parse(readFileSync(join(__dirname, "../settings.json"), "utf8")));
 // Making the web app
 export const APP = express();
+// If a port env variable was provided the instance should be considered an automated deployment
+export const DEPLOYMENT = typeof process.env.PORT != "undefined";
 // Making a pool connection
-export const DB = new Pool({
+export const DB = DEPLOYMENT ? new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
+}) : new Pool({
     ...SETTINGS.get("data"),
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD
 });
+
 
 // Storing the web settings in a variable to avoid repeated function calls
 const web = SETTINGS.get("web");
@@ -146,7 +154,7 @@ BetterArray.from(readdirSync(controllers)).asyncMap(
     });
 
     // Starting the web app
-    if (process.env.PORT) {
+    if (DEPLOYMENT) {
         APP.listen(port, successCallback);
     } else {
         APP.listen(port, web.host, successCallback);
