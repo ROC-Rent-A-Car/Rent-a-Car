@@ -2,6 +2,7 @@
  * A lookup table to minimize the usage of large strings when providing error messages
  */
 export enum Conflict {
+    INVALID_REGISTRATION = "De {fields} velden zijn ongeldig",
     INVALID_FIELDS = "Een aantal velden zijn ongeldig",
     INVALID_AUTHORIZATION = "De authorisatie is ongeldig",
     INVALID_LOGIN = "Ongeldige login",

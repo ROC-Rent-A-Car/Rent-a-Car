@@ -16,11 +16,6 @@ if (user) {
     form.addEventListener("submit", (event) => {
         event.preventDefault();
 
-        if (resetEvent) {
-            document.getElementById("message").innerText = "";
-            clearTimeout(resetEvent);
-        }
-
         // @ts-ignore
         const form = [...new FormData(event.target)];
         const { username, password, verPassword, email, phone, postalCode } = Object.fromEntries(form);

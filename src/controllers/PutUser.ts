@@ -28,7 +28,7 @@ import { Username } from "../utils/Username";
  * - `password`: The plain password string
  * - `email`: The email string
  * - `phone`: The phone number string
- * - `postal`: The postal code string
+ * - `postalCode`: The postal code string
  */
 export class PutUser extends Controller {
 
@@ -38,22 +38,26 @@ export class PutUser extends Controller {
 
     protected async request(request: request, response: response): Promise<void> {
         // Collecting all fields in a single object to use array tools for small and fast checks
+        // This is in dutch due to the fact that the fields are named in dutch
         const fields = {
-            username: new Username(request.body.username),
-            password: new Password(request.body.password),
+            gebruikersnaam: new Username(request.body.username),
+            wachtwoord: new Password(request.body.password),
             email: new Email(request.body.email),
-            phoneNumber: new PhoneNumber(request.body.number),
-            postalCode: new PostalCode(request.body.postal)
+            telefoonNummer: new PhoneNumber(request.body.phone),
+            postCode: new PostalCode(request.body.postalCode)
         };
+        const invalidFields = Object.entries(fields).filter(
+            ([ _, value ]) => !value.validate()
+        );
         
         // Checking if every field is valid
-        if (Object.values(fields).every((field) => field.validate())) {
+        if (!invalidFields.length) {
             // Transforming all fields
             const processed = Object.fromEntries(Object.entries(fields).map(([ key, value ]) => [ key, value.transform() ]));
             
             // First making sure the username and email are unique
             Query.create("SELECT uuid FROM users WHERE username = $1 OR email = $2", [
-                processed.username, 
+                processed.gebruikersnaam, 
                 processed.email 
             ]).then(({ rowCount }) => {
                 if (rowCount) {
@@ -81,11 +85,11 @@ export class PutUser extends Controller {
                             $7
                         ) RETURNING *
                     `, [
-                        processed.username,
-                        processed.password,
+                        processed.gebruikersnaam,
+                        processed.wachtwoord,
                         processed.email,
-                        processed.phoneNumber,
-                        processed.postalCode,
+                        processed.telefoonNummer,
+                        processed.postCode,
                         new Token(4).toString(),
                         new Date(date.setDate(date.getDate() + SETTINGS.get("api").token_days_valid))
                     ]).then(({ rows: [ user ] }) => this.respond<UserResponse>(response, Status.CREATED, {
@@ -102,7 +106,12 @@ export class PutUser extends Controller {
             }).catch(() => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS));
         } else {
             // Some fields aren't correct
-            this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
+            this.respond(response, Status.CONFLICT, Conflict.INVALID_REGISTRATION.replace(
+                /{fields}/g,
+                invalidFields.map(
+                    ([ key ]) => key.split(/(?=[A-Z])/).map((word) => word.toLowerCase()).join(" ")
+                ).join(", ")
+            ));
         }
     }
 }
