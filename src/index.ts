@@ -55,16 +55,7 @@ appendFileSync(consoleOutput, `----======== Instance started at ${
     new Date(date.setMinutes(date.getMinutes() + date.getTimezoneOffset())).toLocaleString("en-GB")
 } =========----\n`);
 
-// Setting POST field settings
-APP.use(urlencoded({ 
-    extended: true ,
-    limit: `${web.max_packet_size}mb`
-}));
-APP.use(express.json({
-    limit: `${web.max_packet_size}mb`
-}));
-
-// Setting a logger
+// Setting a logger and general security checker
 APP.use((request, _, next) => {
     // If this doesn't work then sorry but I'm not going to buy a domain just to check if this keeps giving the default IP
     DevConsole.info("\x1b[34m%s\x1b[0m requested \x1b[34m%s\x1b[0m", request.ip, request.url);
@@ -73,8 +64,12 @@ APP.use((request, _, next) => {
     sampleInteractions.ipInteractions[request.ip] = (sampleInteractions.ipInteractions[request.ip] ?? 0) + 1;
     sampleInteractions.ipInteractions[request.path] = (sampleInteractions.ipInteractions[request.path] ?? 0) + 1;
 
-    const ipOverload = request.ip != "127.0.0.1" && sampleInteractions.ipInteractions[request.ip] >= security.ip_specific_requests_before_warning;
-    const endpointOverload = sampleInteractions.ipInteractions[request.path] >= security.endpoint_specific_requests_before_warning;
+    const ipOverload = request.ip != "127.0.0.1" && sampleInteractions.ipInteractions[
+        request.ip
+    ] >= security.ip_specific_requests_before_warning;
+    const endpointOverload = sampleInteractions.ipInteractions[
+        request.path
+    ] >= security.endpoint_specific_requests_before_warning;
 
     if (ipOverload || endpointOverload) {
         alarmLog(ipOverload ? request.ip : "Varied", endpointOverload ? request.path : "Varied");
@@ -84,6 +79,15 @@ APP.use((request, _, next) => {
 
     next();
 });
+
+// Setting POST field settings
+APP.use(urlencoded({ 
+    extended: true ,
+    limit: `${web.max_packet_size}mb`
+}));
+APP.use(express.json({
+    limit: `${web.max_packet_size}mb`
+}));
 
 // Setting the static files
 APP.use(express.static(join(__dirname, "../static")));
@@ -136,7 +140,11 @@ BetterArray.from(readdirSync(controllers)).asyncMap(
     });
 
     // Starting the web app
-    APP.listen(web.port, web.host, () => DevConsole.info("Listening to \x1b[34m%s:%s\x1b[0m", web.host, web.port.toString()));
+    APP.listen(
+        parseInt(<string>process.env.PORT) || web.port, 
+        web.host, 
+        () => DevConsole.info("Listening to \x1b[34m%s:%s\x1b[0m", web.host, web.port.toString())
+    );
 });
 
 // Declaring an alarm logging method
