@@ -31,6 +31,7 @@ import { QueryParser } from "../utils/QueryParser";
 export class PatchRentStatus extends Controller {
 
     constructor() {
+        // TODO: Once payment methods are implemented, it should be required by this endpoint to verify that the user payed for the rent
         super("/pending/:rentId", RequestMethod.PATCH);
     }
 
