@@ -64,28 +64,37 @@ appendFileSync(consoleOutput, `----======== Instance started at ${
 } =========----\n`);
 
 // Setting a logger and general security checker
-APP.use((request, _, next) => {
-    // If this doesn't work then sorry but I'm not going to buy a domain just to check if this keeps giving the default IP
-    DevConsole.info("\x1b[34m%s\x1b[0m requested \x1b[34m%s\x1b[0m", request.ip, request.url);
+APP.use((request, response, next) => {
+    const blacklist = JSON.parse(readFileSync(join(__dirname, "../blacklist.json"), "utf8"));
 
-    sampleInteractions.totalInteractions++;
-    sampleInteractions.ipInteractions[request.ip] = (sampleInteractions.ipInteractions[request.ip] ?? 0) + 1;
-    sampleInteractions.ipInteractions[request.path] = (sampleInteractions.ipInteractions[request.path] ?? 0) + 1;
+    if (
+        !blacklist.includes(request.ip) && 
+        (!request.ip.includes(":") || !blacklist.includes(request.ip.split(":")[1]))
+    ) {
+        // If this doesn't work then sorry but I'm not going to buy a domain just to check if this keeps giving the default IP
+        DevConsole.info("\x1b[34m%s\x1b[0m requested \x1b[34m%s\x1b[0m", request.ip, request.url);
 
-    const ipOverload = request.ip != "127.0.0.1" && sampleInteractions.ipInteractions[
-        request.ip
-    ] >= security.ip_specific_requests_before_warning;
-    const endpointOverload = sampleInteractions.ipInteractions[
-        request.path
-    ] >= security.endpoint_specific_requests_before_warning;
+        sampleInteractions.totalInteractions++;
+        sampleInteractions.ipInteractions[request.ip] = (sampleInteractions.ipInteractions[request.ip] ?? 0) + 1;
+        sampleInteractions.ipInteractions[request.path] = (sampleInteractions.ipInteractions[request.path] ?? 0) + 1;
 
-    if (ipOverload || endpointOverload) {
-        alarmLog(ipOverload ? request.ip : "Varied", endpointOverload ? request.path : "Varied");
-    } else if (sampleInteractions.totalInteractions >= security.requests_before_warning) {
-        alarmLog();
+        const ipOverload = request.ip != "127.0.0.1" && sampleInteractions.ipInteractions[
+            request.ip
+        ] >= security.ip_specific_requests_before_warning;
+        const endpointOverload = sampleInteractions.ipInteractions[
+            request.path
+        ] >= security.endpoint_specific_requests_before_warning;
+
+        if (ipOverload || endpointOverload) {
+            alarmLog(ipOverload ? request.ip : "Varied", endpointOverload ? request.path : "Varied");
+        } else if (sampleInteractions.totalInteractions >= security.requests_before_warning) {
+            alarmLog();
+        }
+
+        next();
+    } else {
+        response.status(Status.FORBIDDEN).send("Minimizing packet size");
     }
-
-    next();
 });
 
 // Setting POST field settings
