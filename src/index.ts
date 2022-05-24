@@ -139,11 +139,15 @@ BetterArray.from(readdirSync(controllers)).asyncMap(
         }
     });
 
+    console.log(parseInt(<string>process.env.PORT))
+
     // Starting the web app
     APP.listen(
         parseInt(<string>process.env.PORT) || web.port, 
         web.host, 
-        () => DevConsole.info("Listening to \x1b[34m%s:%s\x1b[0m", web.host, web.port.toString())
+        () => DevConsole.info("Listening to \x1b[34m%s:%s\x1b[0m", web.host, (
+            parseInt(<string>process.env.PORT) || web.port
+        ).toString())
     );
 });
 
