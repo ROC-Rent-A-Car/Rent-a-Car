@@ -4,7 +4,7 @@ A restful API and PostgreSQL based website which allows you to easily rent cars 
 
 ## Settings
 
-The settings are expected to be specified in the `settings.json` file on the project root.
+The settings are expected to be specified in the [settings](settings.json) file on the project root.
 
 | Variable                         | Type        | Parent     | Usage                                                                          |
 |----------------------------------|-------------|------------|--------------------------------------------------------------------------------|
@@ -48,7 +48,7 @@ Some settings require a type called `PermLevel`. This is based on the enumeratio
 
 ## Environment Variables
 
-The environment variables are expected to be specified in the `.env` file on the project root.
+The environment variables are expected to be specified in the `.env` file in the project root.
 
 | Variable    | Type     | Usage                 |
 |-------------|----------|-----------------------|
