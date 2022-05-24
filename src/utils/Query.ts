@@ -35,7 +35,7 @@ export class Query {
                     `UPDATE ${table} SET ${[...map.keys()].map((key, index) => `${key} = $${index + 2}`)} WHERE uuid = $1`, [
                         uuid, ...map.values()
                     ]
-                ).then(() => resolve).catch(reject);
+                ).then(() => resolve()).catch(reject);
             } else {
                 reject();
             }
