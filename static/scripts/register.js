@@ -7,10 +7,18 @@ document.getElementById("form").addEventListener("submit", (event) => {
     event.preventDefault();
 
     /**
-     * @type {DynamicObject<string>}
+     * @type {DynamicObject<FormDataEntryValue>}
      */
+    const { 
+        username, 
+        password, 
+        verPassword, 
+        email, 
+        phone, 
+        postalCode,
+        houseNumber 
     // @ts-ignore
-    const { username, password, verPassword, email, phone, postalCode } = Object.fromEntries([...new FormData(event.target)])
+    } = Object.fromEntries([...new FormData(event.target)])
 
 
     if (password == verPassword) {
@@ -19,7 +27,8 @@ document.getElementById("form").addEventListener("submit", (event) => {
             password,
             email,
             phone,
-            postalCode
+            postalCode,
+            houseNumber
         }).then(async (response) => {
             /**
              * @type {APIResponse<User>}

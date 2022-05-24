@@ -7,7 +7,7 @@ class APIRequest {
      * @param {string} path 
      * @param {"GET"|"PATCH"|"POST"|"PUT"} method
      * @param {DynamicObject<string>} headers
-     * @param {DynamicObject<JSONPrimitive>} body
+     * @param {DynamicObject<JSONPrimitive|FormDataEntryValue>} body
      * @returns {Promise<Response>}
      */
     static async request(path, method, headers = {}, body = undefined) {

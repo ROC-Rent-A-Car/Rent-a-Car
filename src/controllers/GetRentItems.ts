@@ -171,7 +171,8 @@ export class GetRentItems extends Controller {
                                 postalCode: item.rentObject.userObject.postal_code,
                                 permLevel: item.rentObject.userObject.perm_level,
                                 token: item.rentObject.userObject.token,
-                                tokenExpiration: new Date(item.rentObject.userObject.token_expiration).getTime()
+                                tokenExpiration: new Date(item.rentObject.userObject.token_expiration).getTime(),
+                                houseNumber: item.rentObject.userObject.house_number
                             }
                         },
                         car: {

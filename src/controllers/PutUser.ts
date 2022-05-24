@@ -8,6 +8,7 @@ import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
 import { response } from "../types/response";
 import { Email } from "../utils/Email";
+import { HouseNumber } from "../utils/HouseNumber";
 import { Password } from "../utils/Password";
 import { PhoneNumber } from "../utils/PhoneNumber";
 import { PostalCode } from "../utils/PostalCode";
@@ -29,6 +30,7 @@ import { Username } from "../utils/Username";
  * - `email`: The email string
  * - `phone`: The phone number string
  * - `postalCode`: The postal code string
+ * - `houseNumber`: The house number string
  */
 export class PutUser extends Controller {
 
@@ -44,7 +46,8 @@ export class PutUser extends Controller {
             wachtwoord: new Password(request.body.password),
             email: new Email(request.body.email),
             telefoonNummer: new PhoneNumber(request.body.phone),
-            postCode: new PostalCode(request.body.postalCode)
+            postCode: new PostalCode(request.body.postalCode),
+            huisnummer: new HouseNumber(request.body.houseNumber)
         };
         const invalidFields = Object.entries(fields).filter(
             ([ _, value ]) => !value.validate()
@@ -91,7 +94,8 @@ export class PutUser extends Controller {
                         processed.telefoonNummer,
                         processed.postCode,
                         new Token(4).toString(),
-                        new Date(date.setDate(date.getDate() + SETTINGS.get("api").token_days_valid))
+                        new Date(date.setDate(date.getDate() + SETTINGS.get("api").token_days_valid)),
+                        processed.huisnummer
                     ]).then(({ rows: [ user ] }) => this.respond<UserResponse>(response, Status.CREATED, {
                         uuid: user.uuid,
                         username: user.username,
@@ -100,7 +104,8 @@ export class PutUser extends Controller {
                         postalCode: user.postal_code,
                         permLevel: user.perm_level,
                         token: user.token,
-                        tokenExpiration: new Date(user.token_expiration).getTime()
+                        tokenExpiration: new Date(user.token_expiration).getTime(),
+                        houseNumber: user.house_number
                     })).catch(() => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS));
                 }
             }).catch(() => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS));

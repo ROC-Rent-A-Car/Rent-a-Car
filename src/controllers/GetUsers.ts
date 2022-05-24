@@ -41,7 +41,8 @@ export class GetUsers extends Controller {
                     email: user.email,
                     phone: user.phone,
                     postalCode: user.postal_code,
-                    permLevel: user.perm_level
+                    permLevel: user.perm_level,
+                    houseNumber: user.house_number,
                 })))
             ).catch(() => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS));
         } else {

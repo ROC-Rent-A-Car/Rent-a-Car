@@ -18,7 +18,15 @@ if (user) {
 
         // @ts-ignore
         const form = [...new FormData(event.target)];
-        const { username, password, verPassword, email, phone, postalCode } = Object.fromEntries(form);
+        const { 
+            username, 
+            password, 
+            verPassword, 
+            email, 
+            phone, 
+            postalCode, 
+            houseNumber
+        } = Object.fromEntries(form);
 
         if (password) {
             if (form.filter(([ key ]) => key.toLowerCase().includes("password")).some(
@@ -26,11 +34,12 @@ if (user) {
             ) || password == verPassword) {
                 // There's probably a better way to do this but the deadline is approaching
                 const newUserObject = {
-                    username: username ? String(username) : undefined,
+                    username,
                     password: password == verPassword ? String(password) : undefined,
-                    email: email ? String(email) : undefined,
-                    phone: phone ? String(phone) : undefined,
-                    postalCode: postalCode ? String(postalCode) : undefined
+                    email,
+                    phone,
+                    postalCode,
+                    houseNumber
                 };
 
                 APIRequest.request("/user", "PATCH", {

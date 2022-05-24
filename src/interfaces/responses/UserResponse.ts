@@ -6,6 +6,7 @@ export interface UserResponse extends TableBase {
     email: string,
     phone: string,
     postalCode: string,
+    houseNumber: string,
     permLevel: PermLevel,
     token?: string,
     tokenExpiration?: number

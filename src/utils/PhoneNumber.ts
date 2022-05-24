@@ -6,6 +6,10 @@ export class PhoneNumber extends Type {
         super(phoneNumber ?? "");
     }
 
+    public transform(): string {
+        return this.value.replace(/\s{1}/g, "-");
+    }
+
     /**
      * @returns Checks if the phone number fits the global standard
      */

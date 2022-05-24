@@ -20,19 +20,21 @@
         <h1>Registreren</h1>
         <form id="form">
             <label for="username">Gebruikersnaam</label>
-            <input name="username" type="text" minlength="6" maxlength="64" required>
+            <input id="username" name="username" type="text" minlength="6" maxlength="64" required>
             <label for="password">Wachtwoord</label>
-            <input name="password" type="password" minlength="8" maxlength="64" pattern="^.*?(?:[^a-zA-Z\d].*?\d|\d.*?[^a-zA-Z\d]).*?$" required>
+            <input id="password" name="password" type="password" minlength="8" maxlength="64" pattern="^.*?(?:[^a-zA-Z\d].*?\d|\d.*?[^a-zA-Z\d]).*?$" required>
             <label for="verPassword">Verifieer wachtwoord</label>
-            <input name="verPassword" type="password" minlength="8" maxlength="64" pattern="^.*?(?:[^a-zA-Z\d].*?\d|\d.*?[^a-zA-Z\d]).*?$" required>
+            <input id="verPassword" name="verPassword" type="password" minlength="8" maxlength="64" pattern="^.*?(?:[^a-zA-Z\d].*?\d|\d.*?[^a-zA-Z\d]).*?$" required>
             <label for="email">Email</label>
-            <input name="email" type="email" placeholder="example@gmail.com" required>
+            <input id="email" name="email" type="email" placeholder="example@gmail.com" required>
             <label for="phone">Telefoon nummer</label>
-            <input name="phone" type="tel" pattern="^\+31[-\s]?6[-\s]?\d{4}[-\s]?\d{4}$" placeholder="+31 6 1234 5678" required>
+            <input id="phone" name="phone" type="tel" pattern="^\+31[-\s]?6[-\s]?\d{4}[-\s]?\d{4}$" placeholder="+31 6 1234 5678" required>
             <label for="postalCode">Postcode</label>
-            <input name="postalCode" type="text" pattern="^[1-9]\d{3}[A-Z]{2}$" placeholder="1000AA" required>
+            <input id="postalCode" name="postalCode" type="text" pattern="^[1-9]\d{3}[-\s]?[A-Z]{2}$" placeholder="1000AA" required>
+            <label for="houseNumber">Huisnummer</label>
+            <input id="houseNumber" name="houseNumber" type="text" pattern="^\d{1,6}[-\s]?[a-z0-9]{0,4}$" placeholder="123-A" required>
             <label class="checkbox" for="agree">
-                <input name="agree" type="checkbox" required>
+                <input id="agree" name="agree" type="checkbox" required>
                 Ik accepteer de <a>Terms of Use</a> & <a>Privacy Policy</a>
             </label>
             <input type="submit" value="Registreer">

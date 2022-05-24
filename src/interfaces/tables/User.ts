@@ -5,5 +5,6 @@ export interface User extends TokenInfo {
     password_hash: string,
     email: string,
     phone: string,
-    postal_code: string
+    postal_code: string,
+    house_number: string
 }

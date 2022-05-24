@@ -44,7 +44,8 @@ export class PostLogin extends Controller {
                         postalCode: user.postal_code,
                         permLevel: user.perm_level,
                         token: user.token,
-                        tokenExpiration: new Date(user.token_expiration).getTime()
+                        tokenExpiration: new Date(user.token_expiration).getTime(),
+                        houseNumber: user.house_number,
                     });
                 } else {
                     this.respond(response, Status.UNAUTHORIZED, Conflict.INVALID_LOGIN);
