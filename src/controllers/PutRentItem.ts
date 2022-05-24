@@ -10,6 +10,7 @@ import { User } from "../interfaces/tables/User";
 import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
 import { response } from "../types/response";
+import { CheckItems } from "../utils/CheckItems";
 import { Query } from "../utils/Query";
 import { QueryParser } from "../utils/QueryParser";
 
@@ -43,12 +44,17 @@ export class PutRentItem extends Controller {
 
         // Check if the authorization header has the required fields and has the correct permission level
         if (userId && token && this.isAuthorized(request.ip, userId, token, PermLevel.USER)) {
-            const fromDate = new Date(request.body.from)
+            const fromDate = new Date(request.body.from);
+            const days = Number(request.body.days);
             
             if (
                 request.body.car && 
-                Number(request.body.days) && 
-                fromDate.toString() != "Invalid Date"
+                days > 0 && 
+                !isNaN(+fromDate) &&
+                CheckItems.isCarAvailable(
+                    request.body.car, 
+                    +fromDate, new Date(fromDate).setDate(fromDate.getDate() + days)
+                )
             ) {
                 Query.create<Rent>("INSERT INTO rents (\"user\") VALUES ($1) RETURNING *", [
                     userId
@@ -71,7 +77,7 @@ export class PutRentItem extends Controller {
                 `, [
                     rent.uuid,
                     request.body.car,
-                    Number(request.body.days),
+                    days,
                     fromDate,
                     Number(car.price)
                 ]).then(({ rows: [ item ] }) => Query.create<User>("SELECT * FROM users WHERE uuid = $1", [
