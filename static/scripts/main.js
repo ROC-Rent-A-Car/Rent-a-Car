@@ -3,6 +3,7 @@
 /// <reference path="Cookie.js" />
 /// <reference path="APIRequest.js" />
 
+var resetEvent;
 var user = JSON.parse(Cookie.get("user") || sessionStorage.getItem("user"));
 var nav = document.createElement("div");
 var account = document.createElement("div");
@@ -153,4 +154,21 @@ function constructAuthorization({ uuid, token } = JSON.parse(Cookie.get("user"))
         userId: uuid,
         token
     });
+}
+
+/**
+ * @param {string} message 
+ * @param {string} color 
+ * @returns {void}
+ */
+ function show(message, color) {
+    const messageNode = document.getElementById("message");
+
+    if (resetEvent) {
+        clearTimeout(resetEvent);
+    }
+    
+    messageNode.style.color = color;
+    messageNode.innerText = message;
+    resetEvent = setTimeout(() => messageNode.innerText = "", 3e3);
 }

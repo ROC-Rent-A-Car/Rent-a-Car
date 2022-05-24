@@ -3,7 +3,6 @@
 /// <reference path="Cookie.js" />
 /// <reference path="APIRequest.js" />
 
-var resetEvent;
 var user = JSON.parse(Cookie.get("user") || sessionStorage.getItem("user"));
 var form = document.getElementById("form");
 
@@ -71,17 +70,4 @@ if (user) {
     });
 } else {
     form.remove();
-}
-
-/**
- * @param {string} message 
- * @param {string} color 
- * @returns {void}
- */
-function show(message, color) {
-    const messageNode = document.getElementById("message");
-    
-    messageNode.style.color = color;
-    messageNode.innerText = message;
-    resetEvent = setTimeout(() => messageNode.innerText = "", 3e3);
 }

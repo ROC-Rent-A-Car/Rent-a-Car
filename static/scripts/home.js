@@ -2,7 +2,6 @@
 /// <reference path="index.d.ts" />
 /// <reference path="Cookie.js" />
 
-var resetEvent;
 var date = new Date(Date.now() + 864e5);
 
 [
@@ -53,16 +52,3 @@ document.getElementById("form").addEventListener("submit", (event) => {
         show("De datum moet een geldige datum zijn.", "red");
     }
 });
-
-/**
- * @param {string} message 
- * @param {string} color 
- * @returns {void}
- */
- function show(message, color) {
-    const messageNode = document.getElementById("message");
-    
-    messageNode.style.color = color;
-    messageNode.innerText = message;
-    resetEvent = setTimeout(() => messageNode.innerText = "", 3e3);
-}

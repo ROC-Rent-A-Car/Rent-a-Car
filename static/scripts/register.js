@@ -3,15 +3,8 @@
 /// <reference path="Cookie.js" />
 /// <reference path="APIRequest.js" />
 
-var resetEvent;
-
 document.getElementById("form").addEventListener("submit", (event) => {
     event.preventDefault();
-    
-    if (resetEvent) {
-        document.getElementById("message").innerText = "";
-        clearTimeout(resetEvent);
-    }
 
     /**
      * @type {DynamicObject<string>}
@@ -32,20 +25,21 @@ document.getElementById("form").addEventListener("submit", (event) => {
              * @type {APIResponse<User>}
              */
             const { status, message } = await response.json();
-            const messageNode = document.getElementById("message");
+            const isStringMessage = typeof message == "string";
 
-            if (status == 201 && typeof message != "string") {
+            if (status == 201 && !isStringMessage) {
                 const user = JSON.stringify(message);
 
                 sessionStorage.setItem("user", user);
                 Cookie.set("user", user, message.tokenExpiration);
                 window.location.href = "/account.html";
             } else {
-                messageNode.innerText = JSON.stringify(message);
-                resetEvent = setTimeout(() => messageNode.innerText = "", 3e3);
+                show(isStringMessage ? message : "Onbekende fout.", "red");
 
                 throw message;
             }
         }).catch(console.error);
+    } else {
+        show("Wachtwoorden komen niet overeen.", "red");
     }
 });

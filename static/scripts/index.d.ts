@@ -16,3 +16,4 @@ interface APIResponse<T> {
 
 declare function constructQuery(object: DynamicObject<JSONPrimitive>): string;
 declare function constructAuthorization(object?: User): string;
+declare function show(message: string, color: string): void;
