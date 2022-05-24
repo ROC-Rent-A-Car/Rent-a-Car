@@ -131,7 +131,7 @@ if (uuid) {
                         document.querySelector(`input[type="submit"]`).addEventListener("click", (event) => {
                             event.preventDefault();
 
-                            window.location.href = "/login";
+                            window.location.href = "/login.html";
                         });
                     }
                 } else {
