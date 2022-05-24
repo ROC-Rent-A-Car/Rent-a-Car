@@ -29,17 +29,18 @@ if (user) {
             if (form.filter(([ key ]) => key.toLowerCase().includes("password")).some(
                 ([ key, value ]) => user[key] != value
             ) || password == verPassword) {
+                // There's probably a better way to do this but the deadline is approaching
                 const newUserObject = {
-                    username,
-                    password: password == verPassword ? password : undefined,
-                    email,
-                    phone,
-                    postalCode
+                    username: username ? String(username) : undefined,
+                    password: password == verPassword ? String(password) : undefined,
+                    email: email ? String(email) : undefined,
+                    phone: phone ? String(phone) : undefined,
+                    postalCode: postalCode ? String(postalCode) : undefined
                 };
 
                 APIRequest.request("/user", "PATCH", {
                     authorization: constructAuthorization(user)
-                }, user).then(async (response) => {
+                }, newUserObject).then(async (response) => {
                     /**
                      * @type {APIResponse<User>}
                      */
