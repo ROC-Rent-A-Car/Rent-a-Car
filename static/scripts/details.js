@@ -56,11 +56,11 @@ if (uuid) {
 
                     // @ts-ignore The dom type definitions do not extend properly
                     document.getElementById("preview").src = "/resources/" + car.image;
-                    document.getElementById("name").innerText = car.model;
+                    document.getElementById("name").innerText = `${car.brand} - ${car.model}`;
                     document.getElementById("description").innerText = car.description ?? "Geen beschrijving beschikbaar.";
                     document.getElementById("availability").innerText = message.some(
                         (range) => range.from <= now && range.to > now
-                    ) ? "niet beschikbaar" : "beschikbaar";
+                    ) ? "Niet beschikbaar" : "Beschikbaar";
                     document.getElementById("price").innerText = "€" + (
                         car.price % 1 == 0 ? car.price + ",-" : car.price.toFixed(2).replace(".", ",")
                     );
@@ -79,7 +79,7 @@ if (uuid) {
                             return [
                                 currentDate.setDate(
                                     currentDate.getDate() + +(id == "to")
-                                ) < +date && !isInDateRange(date, message)
+                                ) < +date && !isInDateRange(message, date)
                             ];
                         }
                     })));
@@ -97,22 +97,26 @@ if (uuid) {
                                 if (+from > Date.now()) {
                                     const deltaDay = Math.ceil((+to - +from) / 864e5);
 
-                                    if (deltaDay) {
-                                        APIRequest.request("/item", "PUT", {
-                                            authorization: constructAuthorization(user)
-                                        }, {
-                                            car: uuid,
-                                            days: deltaDay,
-                                            from: +from
-                                        }).then(async (response) => {
-                                            const { status, message } = await response.json();
-                            
-                                            if (status == 201 && typeof message != "string") {
-                                                window.location.href = "/gehuurd.html";
-                                            } else {
-                                                throw message;
-                                            }
-                                        }).catch(console.error);
+                                    if (deltaDay > 0) {
+                                        if (!isInDateRange(message, from, to)) {
+                                            APIRequest.request("/item", "PUT", {
+                                                authorization: constructAuthorization(user)
+                                            }, {
+                                                car: uuid,
+                                                days: deltaDay,
+                                                from: +from
+                                            }).then(async (response) => {
+                                                const { status, message } = await response.json();
+                                
+                                                if (status == 201 && typeof message != "string") {
+                                                    window.location.href = "/gehuurd.html";
+                                                } else {
+                                                    throw message;
+                                                }
+                                            }).catch(console.error);
+                                        } else {
+                                            show("Deze auto is al gehuurd.", "red");
+                                        }
                                     } else {
                                         show("De datum moet minstens één dag later zijn.", "red");
                                     }
@@ -141,23 +145,30 @@ if (uuid) {
 }
 
 /**
- * @param {string} message 
- * @param {string} color 
- * @returns {void}
- */
- function show(message, color) {
-    const messageNode = document.getElementById("message");
-    
-    messageNode.style.color = color;
-    messageNode.innerText = message;
-    resetEvent = setTimeout(() => messageNode.innerText = "", 3e3);
-}
-
-/**
- * @param {Date} date
  * @param {DateRange[]} ranges
+ * @param {Date} from
+ * @param {Date=} to
  * @returns {boolean} 
  */
-function isInDateRange(date, ranges) {
-    return ranges.some(({ from, to }) => from - 2592e5 <= +date && +date < to + 864e5); 
+function isInDateRange(ranges, from, to) {
+    return ranges.some((range) => {
+        const fromDate = new Date(range.from);
+        const toDate = new Date(range.to);
+
+        fromDate.setDate(fromDate.getDate() - 3);
+        toDate.setDate(toDate.getDate() + 1);
+
+        return (
+            +fromDate <= +from &&
+            +toDate >= +from
+        ) || (to && (
+            (
+                +fromDate <= +to &&
+                +toDate >= +to
+            ) || (
+                +fromDate >= +from &&
+                +toDate <= +to
+            )
+        ));
+    }); 
 }
