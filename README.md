@@ -54,3 +54,14 @@ The environment variables are expected to be specified in the `.env` file on the
 |-------------|----------|-----------------------|
 | DB_USER     | `string` | The database user     |
 | DB_PASSWORD | `string` | The database password |
+
+## Setup
+
+1. Clone this repository to your preferred directory
+2. Install [Node.js](https://nodejs.org/en/) v16.x or higher
+3. Run `npm install` in the root directory of the project
+4. Install [PostgreSQL](https://www.postgresql.org/download/)
+5. Adjust the [settings](settings.json) to your needs
+6. Create a database with the same name specified in the settings in the `data.database` field using `createdb {name}` in the root directory of the project
+7. Import the [database](database.sql) file into the database using `psql {name} < database.sql` in the root directory of the project
+8. Run `npm start` in the root directory of the project
