@@ -1,7 +1,7 @@
 import { join } from "path";
 import { Pool } from "pg";
 import express from "express";
-import { appendFileSync, readdirSync, readFileSync } from "fs";
+import { appendFileSync, mkdirSync, readdirSync, readFileSync } from "fs";
 import { BetterArray, DevConsole, DynamicObject, Status } from "std-node";
 import { urlencoded } from "body-parser";
 import { Settings } from "./utils/Settings";
@@ -35,8 +35,8 @@ export const DB = DEPLOYMENT ? new Pool({
 const web = SETTINGS.get("web");
 const controllers = join(__dirname, "controllers/");
 
-// Storing the console output file path and current date
-const consoleOutput = join(__dirname, "../output.log");
+// Storing the output log file paths and current date
+const logsDir = join(__dirname, "../logs");
 const date = new Date();
 
 // Storing some basic variables required to sample requests
@@ -58,10 +58,21 @@ setInterval(() => {
 DB.on("error", DevConsole.error);
 
 // Saving logs
-DevConsole.on("output", (log) => appendFileSync(consoleOutput, `${log.split(/\x1b\[\d{1,2}m/).join("")}\n`));
-appendFileSync(consoleOutput, `----======== Instance started at ${
-    new Date(date.setMinutes(date.getMinutes() + date.getTimezoneOffset())).toLocaleString("en-GB")
-} =========----\n`);
+mkdirSync(logsDir);
+
+[
+    "info",
+    "warn",
+    "error"
+].forEach((type) => {
+    const logsFile = join(logsDir, `${type}.log`);
+
+    DevConsole.on(type, (log) => appendFileSync(logsFile, `${log.split(/\x1b\[\d{1,2}m/).join("")}\n`));
+    appendFileSync(logsFile, `----======== Instance started at ${
+        new Date(date.setMinutes(date.getMinutes() + date.getTimezoneOffset())).toLocaleString("en-GB")
+    } =========----\n`);
+});
+
 
 // Setting a logger and general security checker
 APP.use((request, response, next) => {
