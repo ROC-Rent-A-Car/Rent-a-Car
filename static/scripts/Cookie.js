@@ -11,7 +11,7 @@ class Cookie {
      * @returns {void} 
      */
     static set(name, value, expirationTimestamp) {
-        document.cookie = `${name}=${value};expires=${new Date(expirationTimestamp).toUTCString()}path=/`;
+        document.cookie = `${name}=${value};SameSite=Strict;expires=${new Date(expirationTimestamp).toUTCString()};path=/`;
     }
 
     /**
