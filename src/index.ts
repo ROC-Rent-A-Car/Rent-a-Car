@@ -1,7 +1,7 @@
 import { join } from "path";
 import { Pool } from "pg";
 import express from "express";
-import { appendFileSync, mkdirSync, readdirSync, readFileSync } from "fs";
+import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync } from "fs";
 import { BetterArray, DevConsole, DynamicObject, Status } from "std-node";
 import { urlencoded } from "body-parser";
 import { Settings } from "./utils/Settings";
@@ -58,7 +58,9 @@ setInterval(() => {
 DB.on("error", DevConsole.error);
 
 // Saving logs
-mkdirSync(logsDir);
+if (!existsSync(logsDir)) {
+    mkdirSync(logsDir);
+}
 
 [
     "info",

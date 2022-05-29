@@ -41,7 +41,7 @@ export class PostLogin extends Controller {
         );
 
         // Stop providing this service after 3 failed attempts from a specific IP
-        if (this.attempts[request.ip].length < 3) {
+        if (!this.attempts[request.ip] || this.attempts[request.ip].length < 3) {
             const username = new Username(request.body.username);
             const password = new Password(request.body.password);
 
