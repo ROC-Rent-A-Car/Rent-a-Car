@@ -22,7 +22,7 @@ APIRequest.request(`/cars/available?${constructQuery({ from, to })}`, "GET").the
         available = message;
 
         if (user) {
-            APIRequest.request(`/items/user/${user.uuid}`, "GET", {
+            APIRequest.request(`/items/user`, "GET", {
                 authorization: constructAuthorization(user)
             }).then(async (items) => {
                 /**
