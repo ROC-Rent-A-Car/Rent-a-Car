@@ -2,6 +2,7 @@ import { Status } from "std-node";
 import { SETTINGS } from "..";
 import { Conflict } from "../enums/Conflict";
 import { RequestMethod } from "../enums/RequestMethod";
+import { Car } from "../interfaces/tables/Car";
 import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
 import { response } from "../types/response";
@@ -9,7 +10,7 @@ import { Query } from "../utils/Query";
 import { QueryParser } from "../utils/QueryParser";
 
 /**
- * A car deletion API controller which removes a car entry by uuid
+ * A car deletion API controller which disables a car entry by uuid
  * 
  * **URL:** `api/v{version}/car/:carId`  
  * **Request method:** `DELETE`  
@@ -39,9 +40,9 @@ export class DeleteCar extends Controller {
             // Check if a uuid was provided
             if (request.params.carId) {
                 // Attempt to delete the entry
-                Query.create("DELETE FROM cars WHERE uuid = $1", [ 
-                    request.params.carId 
-                ]).then(
+                Query.update<Car>({
+                    disabled: true
+                }, "cars", request.params.uuid).then(
                     () => this.respond(response, Status.NO_CONTENT)
                 ).catch(
                     () => this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS)

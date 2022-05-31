@@ -70,7 +70,7 @@ export class GetCars extends Controller {
                         (rent_items.rent_from::DATE - 3)::TIMESTAMP <= $2
                     )` : ""}
                 )
-            ) = 0`;
+            ) = 0 AND disabled = false`;
             let queryLogic: string | undefined;
 
             // Setting the query conditions
