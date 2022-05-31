@@ -51,7 +51,7 @@
      */
     _gather() {
         return new Promise((resolve, reject) => {
-            APIRequest.request("/cars/top", "GET",  {
+            APIRequest.request("/cars/all", "GET",  {
                 authorization: this._authorization
             }).then(async (cars) => {
                 /**
@@ -139,7 +139,13 @@
         return new Promise((resolve, reject) => {
             APIRequest.request(`/car/${this._message[index].uuid}`, "DELETE", {
                 authorization: this._authorization
-            }).then(() => resolve()).catch(reject);
+            }).then((response) => {
+                if (response.status == 204) {
+                    resolve();
+                } else {
+                    throw "Not delete"; // Fetch won't give a message on a DELETE method
+                }
+            }).catch(reject);
         });
     }
 }
