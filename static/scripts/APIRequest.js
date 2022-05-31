@@ -24,4 +24,17 @@ class APIRequest {
             }
         }));
     }
+
+    /**
+     * @param {string} path 
+     * @param {FormData} body 
+     * @param {DynamicObject<string>} headers 
+     */
+    static async upload(path, body, headers = {}) {
+        return fetch(new Request("/api/v1" + path, {
+            method: "PUT",
+            body,
+            headers
+        }));
+    }
 }
