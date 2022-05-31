@@ -90,7 +90,7 @@ function replaceLogin(user) {
     const account = document.querySelector("div#account");
 
     account.innerHTML = `
-        <p>Account <i class=\"fas fa-user-circle\"></i></p>
+        <p>Account <i class="fas fa-user-circle"></i></p>
         <div id="account-dropdown">
             <a tabindex="5" href="/account.html">Aanpassen</a>
             <p tabindex="6" id="logout">Uitloggen</p>
