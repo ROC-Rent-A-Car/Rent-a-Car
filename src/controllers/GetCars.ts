@@ -125,13 +125,13 @@ export class GetCars extends Controller {
                         image: car.image,
                         description: car.description
                     })))
-                ).catch(() => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS));
+                ).catch(() => this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS));
             } else {
-                // Not a valid info type so throw a conflict status
-                this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
+                // Not a valid info type so throw a bad request status
+                this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS);
             }
         } else {
-            this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
+            this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS);
         }
     }
 }

@@ -52,6 +52,7 @@ export abstract class Controller extends Authorize {
             APP[method](path, (request: request, response: response, next: next) => {
                 // Bad bypass around the horrible error handling of multer but it works
                 let error = "";
+                let status = Status.OK;
 
                 multer({
                     dest: destinationOrMethod,
@@ -66,18 +67,20 @@ export abstract class Controller extends Authorize {
                                 callback(null, true);
                             } else {
                                 error = Conflict.INVALID_FIELDS;
+                                status = Status.BAD_REQUEST;
 
                                 callback(null, false);
                             }
                         } else {
                             error = Conflict.INVALID_AUTHORIZATION;
+                            status = Status.UNAUTHORIZED;
 
                             callback(null, false);
                         }
                     }
                 }).single("file")(request, response, () => {
                     if (error) {
-                        this.respond(response, Status.CONFLICT, error);
+                        this.respond(response, status, error);
                     } else {
                         this.request(request, response, next).catch(DevConsole.error);
                     }

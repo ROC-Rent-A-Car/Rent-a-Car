@@ -28,6 +28,6 @@ export class GetUnavailableDates extends Controller {
     protected async request(request: request, response: response): Promise<void> {
         CheckItems.getCarHiredDateRanges(request.params.uuid).then(
             (ranges) => this.respond<DateRangeResponse[]>(response, Status.OK, ranges)
-        ).catch(() => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS));
+        ).catch(() => this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS));
     }
 }

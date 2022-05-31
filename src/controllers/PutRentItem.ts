@@ -109,18 +109,18 @@ export class PutRentItem extends Controller {
                     price: Number(item.price),
                     rentFrom: new Date(item.rent_from).getTime()
                 })).catch(
-                    () => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS)
+                    () => this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS)
                 )).catch(
-                    () => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS)
+                    () => this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS)
                 )).catch(
-                    () => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS)
+                    () => this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS)
                 )).catch(
-                    () => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS)
+                    () => this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS)
                 );
             }
         } else {
             // The authorization header was incorrect or the user didn't have the correct permission level
-            this.respond(response, Status.CONFLICT, Conflict.INVALID_AUTHORIZATION);
+            this.respond(response, Status.UNAUTHORIZED, Conflict.INVALID_AUTHORIZATION);
         }
     }
 }

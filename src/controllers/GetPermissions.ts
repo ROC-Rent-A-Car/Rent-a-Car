@@ -47,7 +47,7 @@ export class GetPermissions extends Controller {
             }
         } else {
             // The authorization header was incorrect
-            this.respond(response, Status.CONFLICT, Conflict.INVALID_AUTHORIZATION);
+            this.respond(response, Status.UNAUTHORIZED, Conflict.INVALID_AUTHORIZATION);
         }
     }
 }

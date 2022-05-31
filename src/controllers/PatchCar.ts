@@ -58,7 +58,7 @@ export class PatchCar extends Controller {
             }, "cars", request.params.carId).then(
                 () => this.respond(response, Status.ACCEPTED)
             ).catch(
-                () => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS)
+                () => this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS)
             );
         } else {
             // The authorization header was incorrect or the user didn't have the correct permission level

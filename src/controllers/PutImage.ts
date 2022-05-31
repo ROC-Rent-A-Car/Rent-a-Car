@@ -30,7 +30,7 @@ export class PutImage extends Controller {
             this.respond(response, Status.OK);
         } else {
             // The file was not present
-            this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
+            this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS);
         }
     }
 }

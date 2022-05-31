@@ -71,7 +71,7 @@ export class PostLogin extends Controller {
                 }).catch(() => this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS));
             } else {
                 // Some fields were missing or weren't formatted correctly
-                this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
+                this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS);
             }
         } else {
             this.respond(response, Status.UNAUTHORIZED, Conflict.INVALID_LOGIN);

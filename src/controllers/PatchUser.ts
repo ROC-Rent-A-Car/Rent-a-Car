@@ -68,7 +68,7 @@ export class PatchUser extends Controller {
                 }, "users", request.params.overwriteId).then(
                     () => this.respond(response, Status.ACCEPTED)
                 ).catch(
-                    () => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS)
+                    () => this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS)
                 );
             } else {
                 const password = request.body.password ? new Password(request.body.password) : undefined;
@@ -92,11 +92,11 @@ export class PatchUser extends Controller {
                     }, "users", userId).then(
                         () => this.respond(response, Status.ACCEPTED)
                     ).catch(
-                        () => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS)
+                        () => this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS)
                     );
                 } else {
                     // If one fails just assume the request is invalid
-                    this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
+                    this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS);
                 }
             }
         } else {

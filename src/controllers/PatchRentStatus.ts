@@ -64,7 +64,7 @@ export class PatchRentStatus extends Controller {
                     Query.create(query, params).then(
                         () => this.respond(response, Status.ACCEPTED)
                     ).catch(
-                        () => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS)
+                        () => this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS)
                     );
                 } else {
                     // The authorization wasn't valid
@@ -72,11 +72,11 @@ export class PatchRentStatus extends Controller {
                 }
             } else {
                 // Missing the status field                
-                this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
+                this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS);
             }
         } else {
             // The authorization header was incorrect or the user didn't have the correct permission level
-            this.respond(response, Status.CONFLICT, Conflict.INVALID_AUTHORIZATION);
+            this.respond(response, Status.UNAUTHORIZED, Conflict.INVALID_AUTHORIZATION);
         }
     }
 }

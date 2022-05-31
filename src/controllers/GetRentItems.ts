@@ -184,10 +184,10 @@ export class GetRentItems extends Controller {
                             image: item.carObject.image,
                             description: item.carObject.description
                         }
-                    })))).catch(() => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS));
+                    })))).catch(() => this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS));
                 } else {
                     // The logic wasn't set which means either an info type outside the permission level or an invalid type was requested
-                    this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
+                    this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS);
                 }
             } else {
                 // The authorization wasn't valid

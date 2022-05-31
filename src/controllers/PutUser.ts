@@ -106,9 +106,9 @@ export class PutUser extends Controller {
                         token: user.token,
                         tokenExpiration: new Date(user.token_expiration).getTime(),
                         houseNumber: user.house_number
-                    })).catch(() => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS));
+                    })).catch(() => this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS));
                 }
-            }).catch(() => this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS));
+            }).catch(() => this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS));
         } else {
             // Some fields aren't correct
             this.respond(response, Status.CONFLICT, Conflict.INVALID_REGISTRATION.replace(
