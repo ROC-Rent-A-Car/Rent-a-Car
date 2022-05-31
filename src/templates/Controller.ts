@@ -125,6 +125,6 @@ export abstract class Controller extends Authorize {
         response.status(status).json({
             status,
             message
-        });
+        }).end();
     }
 }
