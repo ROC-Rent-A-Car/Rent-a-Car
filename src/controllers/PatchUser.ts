@@ -17,7 +17,7 @@ import { QueryParser } from "../utils/QueryParser";
  * A car update API controller which updates the specified fields in the car entry
  * 
  * **URL:** `api/v{version}/user/:overwriteId?`  
- * **Request method:** `Patch`  
+ * **Request method:** `PATCH`  
  * **Returns:** `void`  
  * **Authorized:** `true`  
  * 

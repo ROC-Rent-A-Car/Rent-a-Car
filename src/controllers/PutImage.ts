@@ -7,6 +7,22 @@ import { Controller } from "../templates/Controller";
 import { request } from "../types/request";
 import { response } from "../types/response";
 
+/**
+ * A image upload API controller which allows you to upload an image
+ * 
+ * **URL:** `api/v{version}/image`  
+ * **Request method:** `PUT`  
+ * **Returns:** `void`  
+ * **Authorized:** `true`  
+ * 
+ * **Form body:**
+ * 
+ * - `file`: The image file
+ * 
+ * **Header fields:**
+ * 
+ * - `authorization`: The authorization query
+ */
 export class PutImage extends Controller {
     
     constructor() {

@@ -12,7 +12,7 @@ import { QueryParser } from "../utils/QueryParser";
  * A rent pending status update API controller which toggles the setup status of the specified rent item
  * 
  * **URL:** `api/v{version}/pending/:rentId`  
- * **Request method:** `Patch`  
+ * **Request method:** `PATCH`  
  * **Returns:** `void`  
  * **Authorized:** `true`  
  * 
