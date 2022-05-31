@@ -11,15 +11,45 @@
     /**
      * @throws {Error}
      * @param {boolean} editable 
+     * @param {boolean} creatable 
      */
-    constructor(editable) {
-        super(editable);
+    constructor(editable, creatable) {
+        super(editable, creatable, {
+            nummerbord: {
+                key: "license",
+                type: "string",
+                editable: true
+            },
+            merk: {
+                key: "brand",
+                type: "string"
+            },
+            model: {
+                key: "model",
+                type: "string"
+            },
+            prijs: {
+                key: "price",
+                type: "number",
+                editable: true
+            },
+            foto: {
+                key: "image",
+                type: "image",
+                editable: true
+            },
+            beschrijving: {
+                key: "description",
+                type: "string",
+                editable: true
+            }
+        });
     }
 
     /**
-     * @returns {Promise<DynamicObject<TableEntry>[]>}
+     * @returns {Promise<Car[]>}
      */
-    _render() {
+    _gather() {
         return new Promise((resolve, reject) => {
             APIRequest.request("/cars/top", "GET",  {
                 authorization: this._authorization
@@ -30,38 +60,7 @@
                 const { status, message } = await cars.json();
 
                 if (status == 200 && typeof message != "string") {
-                    this._message = message;
-
-                    resolve(message.map((car) => ({
-                        nummerbord: {
-                            key: "license",
-                            value: car.license,
-                            editable: true
-                        },
-                        merk: {
-                            key: "brand",
-                            value: car.brand
-                        },
-                        model: {
-                            key: "model",
-                            value: car.model
-                        },
-                        prijs: {
-                            key: "price",
-                            value: car.price,
-                            editable: true
-                        },
-                        foto: {
-                            key: "image",
-                            value: car.image,
-                            editable: true
-                        },
-                        beschrijving: {
-                            key: "description",
-                            value: car.description,
-                            editable: true
-                        }
-                    })));
+                    resolve(message);
                 } else {
                     throw message;
                 }
@@ -98,6 +97,35 @@
             }
 
             console.error(error);
+        });
+    }
+
+    /**
+     * @abstract
+     * @param {Event} _ 
+     * @param {number} index 
+     * @returns {Promise<Car>}
+     */
+    _create(_, index) {
+        return new Promise((resolve, reject) => {
+            const entries = [
+                ...document.getElementById(index.toString()).children
+            // @ts-ignore
+            ].map((child) => [ child.classList[0], child.firstChild.value ]);
+
+            if (entries.every(([ _, value ]) => Boolean(value))) {
+                APIRequest.request("/car", "PUT", {
+                    authorization: this._authorization
+                }, Object.fromEntries(entries)).then(async (response) => {
+                    const { status, message } = await response.json();
+
+                    if (status == 201 && typeof message != "string") {
+                        resolve(message);
+                    } else {
+                        throw message;
+                    }
+                }).catch(reject);
+            }
         });
     }
 }

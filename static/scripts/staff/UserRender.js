@@ -11,15 +11,38 @@ class UserRender extends Render {
     /**
      * @throws {Error}
      * @param {boolean} editable 
+     * @param {boolean} creatable
      */
-    constructor(editable) {
-        super(editable);
+    constructor(editable, creatable) {
+        super(editable, creatable, {
+            gebruikersnaam: {
+                key: "username",
+                type: "string"
+            },
+            email: {
+                key: "email",
+                type: "string"
+            },
+            nummer: {
+                key: "phone",
+                type: "string"
+            },
+            postcode: {
+                key: "postalCode",
+                type: "string"
+            },
+            "toegang niveau": {
+                key: "permLevel",
+                type: "perm",
+                editable: true
+            }
+        });
     }
 
     /**
-     * @returns {Promise<DynamicObject<TableEntry>[]>}
+     * @returns {Promise<User[]>}
      */
-    _render() {
+    _gather() {
         return new Promise((resolve, reject) => {
             APIRequest.request("/users", "GET",  {
                 authorization: this._authorization
@@ -30,31 +53,7 @@ class UserRender extends Render {
                 const { status, message } = await users.json();
 
                 if (status == 200 && typeof message != "string") {
-                    this._message = message;
-
-                    resolve(message.map((user) => ({
-                        gebruikersnaam: {
-                            key: "username",
-                            value: user.username
-                        },
-                        email: {
-                            key: "email",
-                            value: user.email
-                        },
-                        nummer: {
-                            key: "phone",
-                            value: user.phone
-                        },
-                        postcode: {
-                            key: "postalCode",
-                            value: user.postalCode
-                        },
-                        "toegang niveau": {
-                            key: "permLevel",
-                            value: user.permLevel,
-                            editable: true
-                        }
-                    })));
+                    resolve(message);
                 } else {
                     throw message;
                 }

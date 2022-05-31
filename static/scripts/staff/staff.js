@@ -40,22 +40,32 @@ APIRequest.request("/permissions", "GET",  {
             {
                 name: "Auto's",
                 setupClass: CarRender,
-                permission: undefined,
-                editPermission: "car_edit_permission"
+                editPermission: "car_edit_permission",
+                createPermission: "car_creation_permission"
             }
         ]).filter((tab) => !tab.permission || message.includes(tab.permission)).forEach((tab, index) => {
             const tabElement = document.createElement("p");
-            const render = new tab.setupClass(message.includes(tab.editPermission));
+            const render = new tab.setupClass(message.includes(tab.editPermission), message.includes(tab.createPermission));
 
             tabElement.innerText = tab.name;
             tabElement.addEventListener("click", (event) => {
                 const table = document.getElementById("content");
                 const active = document.getElementsByClassName("active")[0];
+                const create = document.getElementsByClassName("create")[0];
+                const upload = document.querySelector(`input[type="file"]`);
 
                 table.innerHTML = "";
                 active.classList.remove("active");
                 // @ts-ignore
                 event.target.classList.add("active");
+
+                if (create) {
+                    create.remove();
+                }
+
+                if (upload) {
+                    upload.remove();
+                }
 
                 render.build();
             });

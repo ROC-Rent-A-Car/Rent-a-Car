@@ -10,16 +10,39 @@
 
     /**
      * @throws {Error}
-     * @param {boolean} editable 
+     * @param {boolean} editable
+     * @param {boolean} creatable
      */
-    constructor(editable) {
-        super(editable);
+    constructor(editable, creatable) {
+        super(editable, creatable, {
+            klaargezet: {
+                key: "setup",
+                type: "boolean",
+                editable: true
+            },
+            nummerbord: {
+                key: "car",
+                type: "string"
+            },
+            merk: {
+                key: "car",
+                type: "string"
+            },
+            model: {
+                key: "car",
+                type: "string"
+            },
+            tijd: {
+                key: "rentFromt",
+                type: "date"
+            }
+        });
     }
 
     /**
-     * @returns {Promise<DynamicObject<TableEntry>[]>}
+     * @returns {Promise<RentItem[]>}
      */
-    _render() {
+     _gather() {
         return new Promise((resolve, reject) => {
             APIRequest.request("/items/setup", "GET",  {
                 authorization: this._authorization
@@ -30,31 +53,7 @@
                 const { status, message } = await items.json();
 
                 if (status == 200 && typeof message != "string") {
-                    this._message = message;
-
-                    resolve(message.map((item) => ({
-                        klaargezet: {
-                            key: "setup",
-                            value: item.setup,
-                            editable: true
-                        },
-                        nummerbord: {
-                            key: "car",
-                            value: item.car.license
-                        },
-                        merk: {
-                            key: "car",
-                            value: item.car.brand
-                        },
-                        model: {
-                            key: "car",
-                            value: item.car.model
-                        },
-                        tijd: {
-                            key: "rentFromt",
-                            value: new Date(item.rentFrom)
-                        }
-                    })));
+                    resolve(message);
                 } else {
                     throw message;
                 }
