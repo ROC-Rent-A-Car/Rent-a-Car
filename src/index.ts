@@ -85,7 +85,12 @@ APP.use((request, response, next) => {
         (!request.ip.includes(":") || !blacklist.includes(request.ip.split(":")[1]))
     ) {
         // If this doesn't work then sorry but I'm not going to buy a domain just to check if this keeps giving the default IP
-        DevConsole.info("\x1b[34m%s\x1b[0m requested \x1b[34m%s\x1b[0m", request.ip, request.url);
+        DevConsole.info(
+            "\x1b[34m%s\x1b[0m requested \x1b[34m%s\x1b[0m using \x1b[34m%s\x1b[0m", 
+            request.ip, 
+            request.url,
+            request.method
+        );
 
         sampleInteractions.totalInteractions++;
         sampleInteractions.ipInteractions[request.ip] = (sampleInteractions.ipInteractions[request.ip] ?? 0) + 1;
