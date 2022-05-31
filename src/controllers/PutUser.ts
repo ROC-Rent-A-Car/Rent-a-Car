@@ -77,7 +77,8 @@ export class PutUser extends Controller {
                             phone, 
                             postal_code, 
                             token, 
-                            token_expiration
+                            token_expiration,
+                            house_number
                         ) VALUES (
                             $1, 
                             $2, 
@@ -85,7 +86,8 @@ export class PutUser extends Controller {
                             $4, 
                             $5, 
                             $6, 
-                            $7
+                            $7,
+                            $8
                         ) RETURNING *
                     `, [
                         processed.gebruikersnaam,
