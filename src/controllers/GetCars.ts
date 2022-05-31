@@ -52,7 +52,7 @@ export class GetCars extends Controller {
                 to
             ].slice(0, 1 + +hasTo);
             // Filters available cars in the specified time range
-            const timeCondition = `(
+            const timeCondition = `cars.disabled = false AND (
                 SELECT COUNT(uuid) 
                 FROM rent_items
                 WHERE rent_items.car = cars.uuid AND (
@@ -70,7 +70,7 @@ export class GetCars extends Controller {
                         (rent_items.rent_from::DATE - 3)::TIMESTAMP <= $2
                     )` : ""}
                 )
-            ) = 0 AND disabled = false`;
+            ) = 0`;
             let queryLogic: string | undefined;
 
             // Setting the query conditions
@@ -81,7 +81,8 @@ export class GetCars extends Controller {
                         LEFT JOIN (
                             SELECT COUNT(uuid), car FROM rent_items GROUP BY car
                         ) as refs 
-                        ON refs.car = cars.uuid AND ${timeCondition}
+                        ON refs.car = cars.uuid
+                        WHERE ${timeCondition}
                         ORDER BY refs.count DESC NULLS LAST
                     `;
                     break;
@@ -102,7 +103,7 @@ export class GetCars extends Controller {
                 }
                 case "all": {
                     // Just use the default
-                    queryLogic = "";
+                    queryLogic = "WHERE cars.disabled = false";
                     params.splice(0, params.length);
                     break;
                 }

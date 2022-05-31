@@ -42,8 +42,8 @@ export class DeleteCar extends Controller {
                 // Attempt to delete the entry
                 Query.update<Car>({
                     disabled: true
-                }, "cars", request.params.uuid).then(
-                    () => this.respond(response, Status.NO_CONTENT)
+                }, "cars", request.params.carId).then(
+                    () => this.respond(response, Status.NO_CONTENT, Conflict.INVALID_AUTHORIZATION)
                 ).catch(
                     () => this.respond(response, Status.BAD_REQUEST, Conflict.INVALID_FIELDS)
                 );

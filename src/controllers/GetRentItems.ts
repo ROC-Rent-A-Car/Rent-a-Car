@@ -126,7 +126,11 @@ export class GetRentItems extends Controller {
                             break;
                         }
                         case "user": {
-                            additionalLogic = "r_u.user = $1";
+                            additionalLogic = `
+                                r_u.user = $1 AND (
+                                    SELECT COUNT(uuid) FROM cars WHERE cars.uuid = ri.car AND cars.disabled = true
+                                ) = 0
+                            `;
                             params.push(userId);
                             break;
                         }
