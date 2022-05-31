@@ -67,6 +67,11 @@
     text-align: left;
 }
 
+#table-holder #content td.delete svg {
+    cursor: pointer;
+    padding: 5px;
+}
+
 #table-holder #content input, #table-holder #content select {
     padding: 7px;
     display: inherit;

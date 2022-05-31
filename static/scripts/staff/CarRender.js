@@ -111,7 +111,7 @@
             const entries = [
                 ...document.getElementById(index.toString()).children
             // @ts-ignore
-            ].map((child) => [ child.classList[0], child.firstChild.value ]);
+            ].slice(0, -1).map((child) => [ child.classList[0], child.firstChild.value ]);
 
             if (entries.every(([ _, value ]) => Boolean(value))) {
                 APIRequest.request("/car", "PUT", {
@@ -126,6 +126,20 @@
                     }
                 }).catch(reject);
             }
+        });
+    }
+
+    /**
+     * @abstract
+     * @param {Event} _ 
+     * @param {number} index 
+     * @returns {Promise<void>}
+     */
+    _delete(_, index) {
+        return new Promise((resolve, reject) => {
+            APIRequest.request(`/car/${this._message[index].uuid}`, "DELETE", {
+                authorization: this._authorization
+            }).then(() => resolve()).catch(reject);
         });
     }
 }

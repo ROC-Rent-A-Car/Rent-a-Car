@@ -24,6 +24,7 @@ interface Structure {
 
 interface RenderObject<T extends TableBase> {
     _message: T[];
+    _images: string[];
     _structure: DynamicObject<Structure>;
     _editable: boolean;
     _creatable: boolean;
@@ -34,4 +35,5 @@ interface RenderObject<T extends TableBase> {
     _gather(): Promise<TableBase[]>;
     _edit(event: Event, index: number, property: string): void;
     _create(event: Event, index: number): Promise<TableBase>;
+    _delete(event: Event, index: number): Promise<void>;
 }

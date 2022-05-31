@@ -5,7 +5,7 @@ class APIRequest {
 
     /**
      * @param {string} path 
-     * @param {"GET"|"PATCH"|"POST"|"PUT"} method
+     * @param {"GET"|"PATCH"|"POST"|"PUT"|"DELETE"} method
      * @param {DynamicObject<string>} headers
      * @param {DynamicObject<JSONPrimitive|FormDataEntryValue>} body
      * @returns {Promise<Response>}
