@@ -52,7 +52,7 @@ export class PutCar extends Controller {
                 request.body.description
             ) {
                 Query.create<Car>(`
-                    INSERT INTO users (
+                    INSERT INTO cars (
                         license,
                         brand,
                         model,
@@ -83,10 +83,13 @@ export class PutCar extends Controller {
                     image: car.image,
                     description: car.description
                 }));
+            } else {
+                // Missing some fields
+                this.respond(response, Status.CONFLICT, Conflict.INVALID_FIELDS);
             }
         } else {
             // The authorization header was incorrect or the user didn't have the correct permission level
-            this.respond(response, Status.CONFLICT, Conflict.INVALID_AUTHORIZATION);
+            this.respond(response, Status.UNAUTHORIZED, Conflict.INVALID_AUTHORIZATION);
         }
     }
 }
