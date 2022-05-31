@@ -41,7 +41,7 @@ class Render {
             (key) => key.replace(/(?<=\s|^)(\w)/g, (char) => char.toUpperCase())
         ).join("</th><th>") + "</th>";
 
-        if (values.findIndex((value) => value.type == "image") != -1) {
+        if (values.findIndex((value) => value.type == "image") != -1 && this._editable) {
             await this._addUpload();
         }
 

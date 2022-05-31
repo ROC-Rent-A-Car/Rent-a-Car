@@ -29,7 +29,7 @@ export class PutImage extends Controller {
         super(
             "image", 
             join(__dirname, "../../static/resources"),
-            SETTINGS.get("api").car_creation_permission,
+            SETTINGS.get("api").car_edit_permission,
             "image/"
         );
     }
