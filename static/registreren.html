@@ -20,7 +20,7 @@
         <form id="form">
             <label for="username">Gebruikersnaam</label>
             <input id="username" name="username" type="text" minlength="6" maxlength="64" required>
-            <label for="password">Wachtwoord</label>
+            <label for="password">Wachtwoord <small>(minstens 8 karakters lang met minstens 1 cijfer en 1 speciaal simbool)</small></label>
             <input id="password" name="password" type="password" minlength="8" maxlength="64" pattern="^.*?(?:[^a-zA-Z\d].*?\d|\d.*?[^a-zA-Z\d]).*?$" required>
             <label for="verPassword">Verifieer wachtwoord</label>
             <input id="verPassword" name="verPassword" type="password" minlength="8" maxlength="64" pattern="^.*?(?:[^a-zA-Z\d].*?\d|\d.*?[^a-zA-Z\d]).*?$" required>
