@@ -56,12 +56,12 @@ export abstract class Controller extends Authorize {
 
                 multer({
                     dest: destinationOrMethod,
-                    fileFilter: (request, file, callback) => {
+                    fileFilter: async (request, file, callback) => {
                         // Parse the authorization header query
                         const { userId, token } = new QueryParser(request.headers.authorization || "");
 
                         // Checking if the user is authorized to access the endpoint
-                        if (userId && token && this.isAuthorized(request.ip, userId, token, levelOrVersionOverride)) {
+                        if (userId && token && await this.isAuthorized(request.ip, userId, token, levelOrVersionOverride)) {
                             // Filter specific file types
                             if (filter && file.mimetype.includes(filter)) {
                                 callback(null, true);

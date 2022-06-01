@@ -43,7 +43,7 @@ export class PutRentItem extends Controller {
         const { userId, token } = new QueryParser(request.headers.authorization || "");
 
         // Check if the authorization header has the required fields and has the correct permission level
-        if (userId && token && this.isAuthorized(request.ip, userId, token, PermLevel.USER)) {
+        if (userId && token && await this.isAuthorized(request.ip, userId, token, PermLevel.USER)) {
             const fromDate = new Date(request.body.from);
             const days = Number(request.body.days);
             

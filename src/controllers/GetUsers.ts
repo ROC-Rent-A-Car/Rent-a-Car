@@ -33,7 +33,7 @@ export class GetUsers extends Controller {
         const { userId, token } = new QueryParser(request.headers.authorization || "");
 
         // Check if the authorization header has the required fields and is authorized
-        if (userId && token && this.isAuthorized(request.ip, userId, token, SETTINGS.get("api").user_view_permission)) {
+        if (userId && token && await this.isAuthorized(request.ip, userId, token, SETTINGS.get("api").user_view_permission)) {
             Query.create<User>("SELECT users.* FROM users").then(
                 (users) => this.respond<UserResponse[]>(response, Status.OK, users.rows.map((user) => ({
                     uuid: user.uuid,

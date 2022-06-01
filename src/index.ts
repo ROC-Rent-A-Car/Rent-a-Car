@@ -128,12 +128,12 @@ APP.use(express.json({
 APP.use(express.static(join(__dirname, "../static")));
 
 // Setting a mandatory authorization for the staff endpoint
-APP.use("/beheer", (request, response) => {
+APP.use("/beheer", async (request, response) => {
     if (
         request.method == "POST" &&
         request.body.uuid && 
         request.body.token && 
-        new Authorize().isAuthorized(request.ip, request.body.uuid, request.body.token, PermLevel.EMPLOYEE)
+        await new Authorize().isAuthorized(request.ip, request.body.uuid, request.body.token, PermLevel.EMPLOYEE)
     ) {
         response.status(Status.OK).sendFile(join(__dirname, "../static/beheer/index.html"));
     } else {
