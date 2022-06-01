@@ -65,3 +65,7 @@ The environment variables are expected to be specified in the `.env` file in the
 6. Create a database with the same name specified in the settings in the `data.database` field using `createdb {name}` in the root directory of the project
 7. Import the [database](database.sql) file into the database using `psql {name} < database.sql` in the root directory of the project
 8. Run `npm start` in the root directory of the project
+
+## Security
+
+To read everything about the provided security protocols, please refer to the [protocols](protocols/) directory.
